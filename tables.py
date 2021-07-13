@@ -1,12 +1,14 @@
-use
-aparat;
+# tables of database
 
+create_table_admin = """
 create table admin
 (
     username int auto_increment primary key,
     password varchar(50) not null
 );
+"""
 
+create_table_user = """
 create table user
 (
     username                       varchar(50) primary key,
@@ -21,7 +23,9 @@ create table user
     has_vip_membership             bool default false,
     vip_membership_expiration_date date default null
 );
+"""
 
+create_table_film = """
 create table film
 (
     id           int auto_increment primary key,
@@ -31,21 +35,27 @@ create table film
     details      varchar(200),
     viewers      int default 0
 );
+"""
 
+create_table_film_category = """
 create table film_category
 (
     film_id       int primary key,
     category_name varchar(50),
     foreign key (film_id) references film (id)
 );
+"""
 
+create_table_film_tag = """
 create table film_tag
 (
     film_id int primary key,
     tag     varchar(50),
     foreign key (film_id) references film (id)
 );
+"""
 
+create_table_film_creator = """
 create table film_creator
 (
     film_id           int primary key,
@@ -54,14 +64,18 @@ create table film_creator
     role              varchar(50),
     foreign key (film_id) references film (id)
 );
+"""
 
+create_table_watch_film = """
 create table watch_film
 (
     film_id         int primary key,
     viewer_username varchar(50),
     has_finished    bool default false
 );
+"""
 
+create_table_invite_user = """
 create table invite_user
 (
     inviter_username int,
@@ -70,7 +84,9 @@ create table invite_user
     foreign key (inviter_username) references user (username),
     foreign key (invited_username) references user (username)
 );
+"""
 
+create_table_film_comment = """
 create table film_comment
 (
     film_id         int,
@@ -82,6 +98,8 @@ create table film_comment
     foreign key (film_id) references film (id),
     foreign key (viewer_username) references user (username)
 );
+"""
+create_table_playlist = """
 create table playlist
 (
     id               int auto_increment primary key,
@@ -90,6 +108,9 @@ create table playlist
     creator_username varchar(50),
     foreign key (creator_username) references user (username)
 );
+"""
+
+create_table_playlist_film = """
 create table playlist_film
 (
     playlist_id int,
@@ -98,7 +119,9 @@ create table playlist_film
     foreign key (playlist_id) references playlist (id),
     foreign key (film_id) references film (id)
 );
+"""
 
+create_table_follow_user = """
 create table follow_user
 (
     follower_username  varchar(50),
@@ -107,9 +130,12 @@ create table follow_user
     foreign key (follower_username) references user (username),
     foreign key (following_username) references user (username)
 );
+"""
 
+create_table_log = """
 create table log
 (
     username             varchar(50),
     activity_description varchar(200)
-)
+);
+"""

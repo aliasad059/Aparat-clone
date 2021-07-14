@@ -78,8 +78,8 @@ create table watch_film
 create_table_invite_user = """
 create table invite_user
 (
-    inviter_username int,
-    invited_username int,
+    inviter_username varchar(50),
+    invited_username varchar(50),
     primary key (inviter_username, invited_username),
     foreign key (inviter_username) references user (username),
     foreign key (invited_username) references user (username)
@@ -136,6 +136,8 @@ create_table_log = """
 create table log
 (
     username             varchar(50),
+    activity_type        varchar(50),
+    occurred_at          timestamp default now(),
     activity_description varchar(200)
 );
 """

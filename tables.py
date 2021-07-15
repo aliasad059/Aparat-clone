@@ -141,3 +141,10 @@ create table log
     activity_description varchar(200)
 );
 """
+
+create_table_mysqlErrors = """
+create table my_errors(
+    err_number int auto_increment,
+    err_description varchar(200)
+);
+"""

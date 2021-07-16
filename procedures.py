@@ -243,7 +243,17 @@ BEGIN
 END;
 """
 
-create_buy_vip_membership_procedure = """
+create_vip_membership_procedures = """
+CREATE PROCEDURE Update_Membership_Status(
+    username_param varchar(50)
+)
+BEGIN
+    update user
+    set user.vip_membership_expiration_date = IF(user.vip_membership_expiration_date < CURRENT_DATE(), NULL,
+                                                 user.vip_membership_expiration_date)
+    where user.username = username_param;
+END;
+
 CREATE PROCEDURE BuyVipMembership(
     username_param varchar(50),
     vip_membership_price int
@@ -261,13 +271,63 @@ BEGIN
     end if;
     update user
     set user.balance                        = user.balance - vip_membership_price
-      , user.has_vip_membership             = TRUE
       , user.vip_membership_expiration_date =
         IF((user.vip_membership_expiration_date is not NULL AND user.vip_membership_expiration_date > CURRENT_DATE())
             , ADDDATE(user.vip_membership_expiration_date, INTERVAL 1 MONTH)
             , ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH)
             )
     where user.username = username_param;
+END;
+
+CREATE PROCEDURE BuyVipFilm(
+    username_param varchar(50),
+    film_id_param int,
+    purchase_type varchar(20)
+)
+BEGIN
+    CALL Update_Membership_Status(username_param);
+    if username_param not in
+       (
+           select user.username
+           from user
+           where user.vip_membership_expiration_date is not NULL
+       )
+    then
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You do not have any active vip-membership.', MYSQL_ERRNO = 9012;
+    end if;
+
+    if purchase_type = 'credit' then
+        if (select film.price from film where film.id = film_id_param) >
+           (select user.balance from user where user.username = username_param)
+        then
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Not enough money.', MYSQL_ERRNO = 9010;
+        end if;
+
+        insert into buy_vip_film(buyer_username, film_id) value (username_param, film_id_param);
+
+        update user
+        set user.balance = user.balance - (select film.price from film where film.id = film_id_param)
+        where user.username = username_param;
+
+    end if;
+
+    if purchase_type = 'points' then
+        if (select user.point from user where user.username = username_param) = 0
+        then
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Not enough points.', MYSQL_ERRNO = 9015;
+        end if;
+
+        insert into buy_vip_film(buyer_username, film_id) value (username_param, film_id_param);
+
+        update user
+        set user.point = user.point - 1
+        where user.username = username_param;
+
+    end if;
+
 END;
 """
 
@@ -450,5 +510,81 @@ BEGIN
                           else name
                           end DESC
          ) as res;
+END;
+"""
+
+create_watch_film_procedures = """
+CREATE PROCEDURE WatchFilm(
+    username_param varchar(50),
+    film_id_param int
+)
+BEGIN
+    CALL Update_Membership_Status(username_param);
+    if film_id_param in (select film.id from film where film.price > 0)
+    then
+        if username_param in
+           (select user.username from user where user.vip_membership_expiration_date is NULL)
+        then
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'You do not have any active vip-membership.', MYSQL_ERRNO = 9012;
+        end if;
+
+        if username_param not in
+           (select buy_vip_film.buyer_username from buy_vip_film where buy_vip_film.film_id = film_id_param)
+        then
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'You have not bought this film before.', MYSQL_ERRNO = 9013;
+        end if;
+    end if;
+
+    insert into watch_film (film_id, viewer_username)
+    values (film_id_param, viewer_username);
+
+END;
+
+CREATE PROCEDURE FinishWatching(
+    username_param varchar(50),
+    film_id_param varchar(50)
+)
+BEGIN
+    update watch_film
+    set watch_film.has_finished = TRUE
+    where watch_film.viewer_username = username_param
+      AND watch_film.film_id = film_id_param;
+END;
+"""
+
+create_comment_procedures = """
+CREATE PROCEDURE ShowComments(
+    film_id_param varchar(50)
+)
+BEGIN
+    select *
+    from film_comment
+    where film_comment.film_id = film_id_param;
+END;
+
+CREATE PROCEDURE AddNewComments(
+    viewer_username_param varchar(50),
+    film_id_param varchar(50),
+    comment_param varchar(200),
+    rate_param int
+)
+BEGIN
+    if viewer_username_param not in
+       (
+           select watch_film.viewer_username
+           from watch_film
+           where watch_film.film_id = film_id_param
+             and watch_film.has_finished
+       )
+    then
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You have not watched this film before.', MYSQL_ERRNO = 9014;
+    end if;
+
+    insert into film_comment (film_id, viewer_username, comment, rate)
+    values (film_id_param, viewer_username_param, comment_param, rate_param);
+    
 END;
 """

@@ -20,7 +20,6 @@ create table user
     melli_code                     char(10),
     balance                        int  default 0,
     point                          int  default 0,
-    has_vip_membership             bool default false,
     vip_membership_expiration_date date default null
 );
 """
@@ -111,10 +110,9 @@ create table film_comment
 (
     film_id         int,
     viewer_username varchar(50),
-    comment         varchar(200),
-    rate            int,
+    comment         varchar(200) NULL,
+    rate            int NOT NULL,
     check ( rate >= 0 and rate <= 5),
-    primary key (film_id, viewer_username),
     foreign key (film_id) references film (id),
     foreign key (viewer_username) references user (username)
 );
@@ -167,5 +165,15 @@ create_table_mysqlErrors = """
 create table my_errors(
     err_number int auto_increment,
     err_description varchar(200)
+);
+"""
+create_table_buy_vip_film = """
+create table buy_vip_film
+(
+    buyer_username varchar(50),
+    film_id        int,
+    primary key (buyer_username, film_id),
+    foreign key (buyer_username) references user (username),
+    foreign key (film_id) references film (id)
 );
 """

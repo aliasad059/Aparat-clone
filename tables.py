@@ -3,7 +3,7 @@
 create_table_admin = """
 create table admin
 (
-    username int auto_increment primary key,
+    username varchar(50) primary key,
     password varchar(50) not null
 );
 """
@@ -37,21 +37,39 @@ create table film
 );
 """
 
+create_table_category = """
+create table category
+(
+    name varchar(50) primary key 
+);
+"""
+
+create_table_tag = """
+create table tag
+(
+    tag_value varchar(50) primary key 
+);
+"""
+
 create_table_film_category = """
 create table film_category
 (
-    film_id       int primary key,
-    category_name varchar(50),
-    foreign key (film_id) references film (id)
+    film_id       int,
+    category_name   varchar(50),
+    primary key (film_id,category_name),
+    foreign key (film_id) references film (id),
+    foreign key (category_name) references category (name)
 );
 """
 
 create_table_film_tag = """
 create table film_tag
 (
-    film_id int primary key,
-    tag     varchar(50),
-    foreign key (film_id) references film (id)
+    film_id       int,
+    tag_name   varchar(50),
+    primary key (film_id,tag_name),
+    foreign key (film_id) references film (id),
+    foreign key (tag_name) references tag (tag_value)
 );
 """
 
@@ -99,6 +117,7 @@ create table film_comment
     foreign key (viewer_username) references user (username)
 );
 """
+
 create_table_playlist = """
 create table playlist
 (

@@ -256,27 +256,56 @@ END;
 
 CREATE PROCEDURE BuyVipMembership(
     username_param varchar(50),
-    vip_membership_price int
+    vip_membership_price int,
+    purchase_type varchar(20)
 )
 BEGIN
-    if vip_membership_price > (
-        select user.balance
-        from user
-        where user.username = username_param
-    )
-    then
-        SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT =
-                    'Not enough money', MYSQL_ERRNO = 9010;
+    if purchase_type = 'credit' then
+        if vip_membership_price > (
+            select user.balance
+            from user
+            where user.username = username_param
+        )
+        then
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT =
+                        'Not enough money', MYSQL_ERRNO = 9010;
+        end if;
+
+        update user
+        set user.balance                        = user.balance - vip_membership_price
+          , user.vip_membership_expiration_date =
+            IF((user.vip_membership_expiration_date is not NULL AND
+                user.vip_membership_expiration_date > CURRENT_DATE())
+                , ADDDATE(user.vip_membership_expiration_date, INTERVAL 1 MONTH)
+                , ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH)
+                )
+        where user.username = username_param;
     end if;
-    update user
-    set user.balance                        = user.balance - vip_membership_price
-      , user.vip_membership_expiration_date =
-        IF((user.vip_membership_expiration_date is not NULL AND user.vip_membership_expiration_date > CURRENT_DATE())
-            , ADDDATE(user.vip_membership_expiration_date, INTERVAL 1 MONTH)
-            , ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH)
-            )
-    where user.username = username_param;
+
+    if purchase_type = 'points' then
+        if 3 > (
+            select user.point
+            from user
+            where user.username = username_param
+        )
+        then
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT =
+                        'Not enough points', MYSQL_ERRNO = 9015;
+        end if;
+
+        update user
+        set user.point                          = user.point - 3
+          , user.vip_membership_expiration_date =
+            IF((user.vip_membership_expiration_date is not NULL AND
+                user.vip_membership_expiration_date > CURRENT_DATE())
+                , ADDDATE(user.vip_membership_expiration_date, INTERVAL 1 MONTH)
+                , ADDDATE(CURRENT_DATE(), INTERVAL 1 MONTH)
+                )
+        where user.username = username_param;
+    end if;
+
 END;
 
 CREATE PROCEDURE BuyVipFilm(

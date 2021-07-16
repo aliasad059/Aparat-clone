@@ -617,3 +617,40 @@ BEGIN
     
 END;
 """
+
+create_invite_procedure = """
+CREATE PROCEDURE Invite(
+    inviter_param varchar(50),
+    invited_param varchar(50)
+)
+BEGIN
+    if invited_param in
+       (
+           select invite_user.invited_username
+           from invite_user
+       )
+    then
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You have been invited by another user before.', MYSQL_ERRNO = 9016;
+    end if;
+
+    if (invited_param, inviter_param) in
+       (
+           select invite_user.inviter_username, invite_user.invited_username
+           from invite_user
+       )
+    then
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You both have got your points before.', MYSQL_ERRNO = 9017;
+    end if;
+
+    insert into invite_user (inviter_username, invited_username)
+    values (inviter_param, invited_param);
+
+    update user
+    set user.point = user.point + 1
+    where user.username = inviter_param
+       or user.username = invited_param;
+
+END;
+"""

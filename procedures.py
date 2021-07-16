@@ -654,3 +654,45 @@ BEGIN
 
 END;
 """
+create_playlist_procedures = """
+CREATE PROCEDURE CreatePlaylist(
+    creator_username_param varchar(50),
+    playlist_name_param varchar(50),
+    description_param varchar(200)
+)
+BEGIN
+    CALL Update_Membership_Status(creator_username_param);
+
+    if (select user.vip_membership_expiration_date from user where user.username = creator_username_param) is NULL
+    then
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You do not have any active vip-membership.', MYSQL_ERRNO = 9012;
+    end if;
+
+    insert into playlist(id, creator_username, name, description) value (0, creator_username_param, playlist_name_param, description_param);
+END;
+
+CREATE PROCEDURE AddNewFilmToPlaylist(
+    creator_username_param varchar(50),
+    playlist_id_param int,
+    film_id_param int
+)
+BEGIN
+    CALL Update_Membership_Status(creator_username_param);
+
+    if (select user.vip_membership_expiration_date from user where user.username = creator_username_param) is NULL
+    then
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You do not have any active vip-membership.', MYSQL_ERRNO = 9012;
+    end if;
+
+    if (creator_username_param,playlist_id_param) NOT in (select playlist.creator_username,playlist.id from playlist )
+    then
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You do not have access to add new films to this playlist.', MYSQL_ERRNO = 9018;
+    end if;
+
+    insert into playlist_film(playlist_id, film_id) value (playlist_id_param,film_id_param);
+
+END;
+"""

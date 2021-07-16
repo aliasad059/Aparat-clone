@@ -33,7 +33,9 @@ create table film
     release_date date,
     price        int default 0,
     details      varchar(200),
-    viewers      int default 0
+    viewers      int default 0,
+    rate_avg     int default 0,
+    rates        int default 0
 );
 """
 

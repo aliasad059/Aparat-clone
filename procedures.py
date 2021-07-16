@@ -406,3 +406,49 @@ END;
 
 # TODO: create_remove_film_procedure
 # remove from list, film_category, film_tag
+
+create_search_for_film_procedure = """
+CREATE PROCEDURE SearchForFilm(
+    search_term varchar(200),
+    sort_term varchar(50)
+)
+BEGIN
+    SELECT res.id
+    from (
+             ( -- search over film details
+                 SELECT id,
+                        name,
+                        release_date,
+                        price,
+                        details,
+                        viewers,
+                        rate_avg,
+                        rates
+                 FROM film
+                 WHERE film.details regexp (search_term)
+                    OR film.name regexp (search_term)
+             )
+             UNION
+             ( -- search over creators
+                 SELECT film.id,
+                        film.name,
+                        film.release_date,
+                        film.price,
+                        film.details,
+                        film.viewers,
+                        film.rate_avg,
+                        film.rates
+                 FROM film
+                          INNER JOIN film_creator ON film.id = film_creator.film_id
+                 WHERE film_creator.creator_firstname regexp (search_term)
+                    OR film_creator.creator_lastname regexp (search_term)
+             )
+             order by case
+                          when strcmp(sort_term, 'viewers') = 0 then viewers
+                          when strcmp(sort_term, 'rate_avg') = 0 then rate_avg
+                          when strcmp(sort_term, 'release_date') = 0 then release_date
+                          else name
+                          end DESC
+         ) as res;
+END;
+"""

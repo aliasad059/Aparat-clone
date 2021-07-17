@@ -66,7 +66,7 @@ BEGIN
         insert into user (username, password, last_name, first_name, email, phone_number, melli_code)
         values (username_param, password_param, last_name_param, first_name_param, email_param, phone_number_param,
                 melli_code_param);
-        set result = concat(username_param, ' signed up successfully\n');
+        set result = '';
         COMMIT;
     END if;
 
@@ -567,7 +567,7 @@ BEGIN
     end if;
 
     insert into watch_film (film_id, viewer_username)
-    values (film_id_param, viewer_username);
+    values (film_id_param, username_param);
 
 END;
 
@@ -585,7 +585,7 @@ END;
 
 create_comment_procedures = """
 CREATE PROCEDURE ShowComments(
-    film_id_param varchar(50)
+    film_id_param int 
 )
 BEGIN
     select *
@@ -595,7 +595,7 @@ END;
 
 CREATE PROCEDURE AddNewComments(
     viewer_username_param varchar(50),
-    film_id_param varchar(50),
+    film_id_param int,
     comment_param varchar(200),
     rate_param int
 )
@@ -611,7 +611,7 @@ BEGIN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'You have not watched this film before.', MYSQL_ERRNO = 9014;
     end if;
-
+    
     insert into film_comment (film_id, viewer_username, comment, rate)
     values (film_id_param, viewer_username_param, comment_param, rate_param);
     
@@ -654,6 +654,7 @@ BEGIN
 
 END;
 """
+
 create_playlist_procedures = """
 CREATE PROCEDURE CreatePlaylist(
     creator_username_param varchar(50),
@@ -695,4 +696,8 @@ BEGIN
     insert into playlist_film(playlist_id, film_id) value (playlist_id_param,film_id_param);
 
 END;
+"""
+
+create_divide_rows_function = """
+
 """

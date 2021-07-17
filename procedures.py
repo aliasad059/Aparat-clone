@@ -18,14 +18,14 @@ BEGIN
         select user.username
         from user
     ) then
-        set result = 'This username is already taken.\n';
+        set result = '\nThis username is already taken.';
     END if;
 
     if email_param is not null AND email_param in (
         select user.email
         from user
     ) then
-        set result = concat(result, 'A user with this email has signed up before\n');
+        set result = concat(result, '\nA user with this email has signed up before.');
     END if;
 
     if phone_number_param is not null then
@@ -33,10 +33,10 @@ BEGIN
             select user.phone_number
             from user
         ) then
-            set result = concat(result, 'A user with this phone number has signed up before\n');
+            set result = concat(result, '\nA user with this phone number has signed up before.');
         END if;
         if char_length(phone_number_param) <> 10 then
-            set result = concat(result, 'Phone number must be exactly 10 characters\n');
+            set result = concat(result, '\nPhone number must be exactly 10 characters.');
         END if;
     END if;
 
@@ -45,10 +45,10 @@ BEGIN
             select user.melli_code
             from user
         ) then
-            set result = concat(result, 'A user with this Melli code has signed up before\n');
+            set result = concat(result, '\nA user with this Melli code has signed up before.');
         END if;
         if char_length(melli_code_param) <> 10 then
-            set result = concat(result, 'Melli code must be exactly 10 characters\n');
+            set result = concat(result, '\nMelli code must be exactly 10 characters');
         END if;
     END if;
 
@@ -56,7 +56,7 @@ BEGIN
         password_param REGEXP BINARY '[A-Z]' and
         password_param REGEXP BINARY '[a-z]' and
         char_length(password_param) > 7) then
-        set result = concat(result, 'Entered password must contain at least a number, an uppercase letter, and 8 characters\n');
+        set result = concat(result, '\nEntered password must contain at least a number, an uppercase letter, and 8 characters.');
     END if;
 
 
@@ -66,7 +66,6 @@ BEGIN
         insert into user (username, password, last_name, first_name, email, phone_number, melli_code)
         values (username_param, password_param, last_name_param, first_name_param, email_param, phone_number_param,
                 melli_code_param);
-        set result = '';
         COMMIT;
     END if;
 
@@ -227,6 +226,12 @@ END;
 """
 
 create_increase_balance_procedure = """
+
+CREATE PROCEDURE GetBalance(username_param varchar(50))
+BEGIN
+    select user.balance from user where user.username = username_param;
+END;
+
 CREATE PROCEDURE IncreaseBalance(
     username_param varchar(50),
     amount int

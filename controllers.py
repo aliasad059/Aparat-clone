@@ -13,7 +13,6 @@ BEGIN
     end if;
 END;
 """
-
 create_update_film_rate_avg_trigger = """
 CREATE TRIGGER UpdateAvgRate
     AFTER INSERT

@@ -42,3 +42,30 @@ def signUp(logger, cursor, username: str, password: str,
     except Error as e:
         logger.error(f'[SignUp] {e.msg}')
         return False
+
+
+def walletBalance(logger, cursor, username: str):
+    try:
+        cursor.callproc('GetBalance', args=(username,))
+        for res in cursor.stored_results():
+            data = res.fetchone()
+            print('Your wallet has ' + str(data[0]) + ' credits')
+
+    except Error as e:
+        logger.error(f'[GetBalance] {e.msg}')
+        return
+
+
+def increaseBalance(logger, cursor, username, amount):
+    try:
+        cursor.callproc('IncreaseBalance', args=(username, amount))
+
+    except Error as e:
+        logger.error(f'[IncreaseBalance] {e.msg}')
+        return
+
+
+def printHeader(str):
+    print('######################################################')
+    print(str)
+    print('######################################################')

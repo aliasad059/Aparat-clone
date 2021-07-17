@@ -14,8 +14,8 @@ def config_logger():
     console_handler = logging.StreamHandler()
     file_handler = logging.FileHandler(f'{__name__}.log')
 
-    console_handler.setLevel(logging.INFO)
-    file_handler.setLevel(logging.WARNING)
+    console_handler.setLevel(logging.ERROR)
+    file_handler.setLevel(logging.INFO)
 
     console_format = logging.Formatter('[%(asctime)s] [%(levelname)s] [%(name)s] : %(message)s',
                                        datefmt='%d-%b-%y %H:%M:%S')
@@ -54,37 +54,17 @@ if __name__ == '__main__':
                     in_main_panel = True
                     while in_main_panel:
                         command = input('>')
-                        com, *args = command.split()
+                        try:
+                            com, *args = command.split()
+                        except ValueError:
+                            continue
                         if com.lower() in ('q', 'quit'):
                             logger.info('Shutting down program.')
                             print('Have a Good day, dude. :)\nRemember us.\nAparat')
                             in_main_panel = False
                             continue
                         elif com.lower() in ('h', 'help'):
-                            print('help command')
-                        elif com.lower() == 'signin':
-                            if len(args) != 3:
-                                args = list()
-                                args.append('-u')
-                                args.append(input('Username> '))
-                                args.append(input('Password> '))
-                            if functions.signIn(logger, cursor, *args):
-                                username = args[2]
-                                password = args[3]
-                                isAdmin = False
-                                if args[1] in ('-a', '--admin'):
-                                    isAdmin = True
-
-                                print('Greeting ' + username + '!')
-                                print('Here is your Apart panel.')
-                                if isAdmin:
-                                    print('admin')
-                                else:
-                                    in_user_panel = True
-                                    while in_user_panel:
-                                        command = input('>>')
-                                        com, *args = command.split()
-
+                            print('help command in main panel')
                         elif com.lower() == 'signup':
                             if len(args) != 7:
                                 args = list()
@@ -96,9 +76,91 @@ if __name__ == '__main__':
                                 args.append(input('PhoneNumber> '))
                                 args.append(input('MelliCode> '))
 
-                            print(args)
-                            if functions.signUp(logger, cursor, *args):
-                                print('tss')
+                            functions.signUp(logger, cursor, *args)
+                        elif com.lower() == 'signin':
+                            if len(args) != 3:
+                                args = list()
+                                args.append('-u')
+                                args.append(input('Username> '))
+                                args.append(input('Password> '))
+                            if functions.signIn(logger, cursor, *args):
+                                username = args[1]
+                                password = args[2]
+                                isAdmin = False
+                                if args[1] in ('-a', '--admin'):
+                                    isAdmin = True
+                                functions.printHeader('Greeting ' + username + '!\nHere is your Apart panel.')
+
+                                if isAdmin:
+                                    in_admin_panel = True
+                                    while in_admin_panel:
+                                        command = input('>>')
+                                        try:
+                                            com, *args = command.split()
+                                        except ValueError:
+                                            continue
+                                        if com.lower() in ('q', 'quit'):
+                                            in_admin_panel = False
+                                            continue
+                                        elif com.lower() in ('h', 'help'):
+                                            print('help command in user panel')
+
+                                        elif com.lower() == 'add':  #
+                                            print('')
+                                        elif com.lower() == 'remove':  #
+                                            print('')
+                                        elif com.lower() == 'edit':  #
+                                            print('')
+                                        elif com.lower() == 'update':  #
+                                            print('')
+                                        elif com.lower() == 'category':  #
+                                            print('')
+                                        elif com.lower() == 'tag':  #
+                                            print('')
+                                else:
+                                    in_user_panel = True
+                                    while in_user_panel:
+                                        command = input('>>')
+                                        try:
+                                            com, *args = command.split()
+                                        except ValueError:
+                                            continue
+                                        if com.lower() in ('q', 'quit'):
+                                            in_user_panel = False
+                                            continue
+                                        elif com.lower() in ('h', 'help'):
+                                            print('help command in user panel')
+
+                                        elif com.lower() == 'edit':  # edit personal info
+                                            print('edit personal info')
+
+                                        elif com.lower() == 'wallet':  # increase balance
+                                            functions.printHeader('In your wallet:')
+                                            args = list()
+                                            args.append(username)
+                                            functions.walletBalance(logger, cursor, *args)
+                                            while True:
+                                                command = input('>>>')
+                                                try:
+                                                    com, *args = command.split()
+                                                except ValueError:
+                                                    continue
+                                                if com.lower() in ('q', 'quit'):
+                                                    break
+                                                elif com.lower() in ('h', 'help'):
+                                                    print('wallet help')
+                                                elif com.lower() == 'increase':
+                                                    functions.increaseBalance(logger, cursor, username, args[0])
+
+                                        elif com.lower() == 'upgrade':  # upgrade (show vip membership status, upgrade from point or credit)
+                                            print('')
+                                        elif com.lower() == 'invite':  # invite friend
+                                            print('')
+                                        elif com.lower() == 'watch':  # show films(search,sort,buy vp films)
+                                            print('')
+                                        elif com.lower() == 'playlist':  # create playlist, show myplaylist(add, remove film), show all playlist
+                                            print('')
+
                         else:
                             print('Invalid Command.\nNeed help? Enter \'help\' command')
 

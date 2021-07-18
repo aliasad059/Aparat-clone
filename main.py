@@ -168,9 +168,6 @@ if __name__ == '__main__':
 
                                         elif com.lower() == 'wallet':  # increase balance
                                             functions.printHeader('In your wallet:')
-                                            args = list()
-                                            args.append(username)
-                                            functions.walletBalance(logger, cursor, *args)
                                             while True:
                                                 command = input('>>>')
                                                 try:
@@ -181,19 +178,108 @@ if __name__ == '__main__':
                                                     break
                                                 elif com.lower() in ('h', 'help'):
                                                     print('wallet help')
+                                                elif com.lower() in ('status', 'balance'):
+                                                    functions.walletBalance(logger, cursor, username)
                                                 elif com.lower() == 'increase':
+                                                    if len(args) == 0:
+                                                        args = list()
+                                                        args.append(input('How Much? >>>'))
                                                     functions.increaseBalance(logger, cursor, username, args[0])
 
                                         elif com.lower() == 'invite':  # invite friend
                                             inviter_username = input('Inviter Username>>')
                                             functions.inviteFriend(logger, cursor, inviter_username, username)
 
-                                        elif com.lower() == 'upgrade':  # upgrade (show vip membership status, upgrade from point or credit)
-                                            print('')
+                                        elif com.lower() in ('membership', 'upgrade'):
+                                            while True:
+                                                command = input('>>>')
+                                                try:
+                                                    com, *args = command.split()
+                                                except ValueError:
+                                                    continue
+                                                if com.lower() in ('q', 'quit'):
+                                                    break
+                                                elif com.lower() in ('h', 'help'):
+                                                    print('membership help')
+                                                elif com.lower() == 'status':
+                                                    functions.showVipMembershipStatus(logger, cursor, username)
+                                                elif com.lower() in ('point', 'points'):
+                                                    functions.upgrade_vip_membership(logger, cursor, username, 100,
+                                                                                     'points')
+                                                elif com.lower() in ('credit', 'balance', 'money'):
+                                                    functions.upgrade_vip_membership(logger, cursor, username, 100,
+                                                                                     'credit')
 
-                                        elif com.lower() in ('watch', 'show','film'):  # show films(search,sort,buy vp films)
-                                            print('')
-                                        elif com.lower() == 'playlist':  # create playlist, show myplaylist(add, remove film), show all playlist
+                                        elif com.lower() in ('playlist', 'list'):
+                                            functions.printHeader('In playlist:')
+                                            while True:
+                                                command = input('>>>')
+                                                try:
+                                                    com, *args = command.split()
+                                                except ValueError:
+                                                    continue
+                                                if com.lower() in ('q', 'quit'):
+                                                    break
+                                                elif com.lower() in ('h', 'help'):
+                                                    print('playlist help')
+                                                elif com.lower() in (
+                                                        'my', 'myplaylist', 'myplaylists', 'mylists', 'mylist'):
+                                                    functions.showPlaylists(logger, cursor, username)
+                                                    while True:
+                                                        command = input('>>>>')
+                                                        try:
+                                                            com, *args = command.split()
+                                                        except ValueError:
+                                                            continue
+                                                        if com.lower() in ('q', 'quit'):
+                                                            break
+                                                        elif com.lower() == 'show':
+                                                            functions.showPlaylists(logger, cursor, username)
+                                                        elif com.lower() == 'create':
+                                                            playlist_name = input('Playlist Name>>>> ')
+                                                            playlist_description = ''
+                                                            while True:
+                                                                inp = input(
+                                                                    'Playlist Description(Type exit to stop)>>>> ')
+                                                                if inp == 'exit':
+                                                                    break
+                                                                playlist_description = playlist_description + inp
+                                                            functions.createPlaylist(logger, cursor, username,
+                                                                                     playlist_name,
+                                                                                     playlist_description)
+                                                        elif com.lower() in ('add', 'addto', 'add_to'):
+                                                            if len(args) == 0:
+                                                                args = list()
+                                                                args.append(input('Playlist To Add Number>>>> '))
+                                                                while True:
+                                                                    command = input('Film To Add Number>>>> ')
+                                                                    # TODO:print all films
+                                                                    if command.lower() in ('q', 'quit'):
+                                                                        break
+                                                                    functions.addFilmTo(logger, cursor, args[0],
+                                                                                        command)
+                                                            elif len(args) == 1:
+                                                                while True:
+                                                                    command = input('Film To Add Number>>>> ')
+                                                                    # TODO:print all films
+                                                                    if command.lower() in ('q', 'quit'):
+                                                                        break
+                                                                    functions.addFilmTo(logger, cursor, args[0],
+                                                                                        command)
+                                                            elif len(args) == 2:
+                                                                functions.addFilmTo(logger, cursor, args[0], args[1])
+
+                                                elif com.lower() in ('all', 'show'):
+                                                    functions.showPlaylists(logger, cursor, None)
+
+                                                elif com.lower() in ('watch', 'select', 'choose'):
+                                                    if len(args) == 0:
+                                                        args = list()
+                                                        args.append(input('Playlist Number>>> '))
+                                                    functions.showPlaylistFilms(logger, cursor, args[0])
+                                                    # TODO: get film_id and then play it
+
+                                        elif com.lower() in ('watch', 'show', 'film'):
                                             print('')
 
                         else:

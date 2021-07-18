@@ -130,3 +130,51 @@ def inviteFriend(logger, cursor, inviter: str, invited: str):
         cursor.callproc('Invite', args=(inviter, invited,))
     except Error as e:
         logger.error(f'[Invite] {e.msg}')
+
+
+def showVipMembershipStatus(logger, cursor, username_param):
+    try:
+        cursor.callproc('Update_Membership_Status', args=(username_param,))
+        operation = "SELECT user.balance,user.point, user.vip_membership_expiration_date FROM user WHERE user.username = %(username_param)s"
+        cursor.execute(operation, {'username_param': username_param})
+        status = from_db_cursor(cursor)
+        print(status)
+
+    except Error as e:
+        logger.error(f'[Status] {e.msg}')
+
+
+def upgrade_vip_membership(logger, cursor, username_param: str, price: int, p_type: str):
+    try:
+        cursor.callproc('BuyVipMembership', args=(username_param, price, p_type,))
+    except Error as e:
+        logger.error(f'[Invite] {e.msg}')
+
+
+def showPlaylists(logger, cursor, creator_username: str):
+    try:
+        cursor.callproc('ShowPlaylists', args=(creator_username,))
+    except Error as e:
+        logger.error(f'[ShowPlaylists] {e.msg}')
+
+
+def showPlaylistFilms(logger, cursor, playlist_id_param):
+    try:
+        cursor.callproc('ShowPlaylists', args=(creator_username,))
+    except Error as e:
+        logger.error(f'[ShowPlaylists] {e.msg}')
+
+
+def createPlaylist(logger, cursor, creator_username_param: str, playlist_name_param: str, playlist_description: str):
+    try:
+        cursor.callproc('CreatePlaylist', args=(creator_username_param, playlist_name_param, playlist_description,))
+    except Error as e:
+        logger.error(f'[CreatePlaylist] {e.msg}')
+
+
+def addFilmTo(logger, cursor, playlist_id_param, film_id_parm):
+    return 0
+
+
+def showFilms(logger, cursor):
+    return 0

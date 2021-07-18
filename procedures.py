@@ -504,10 +504,12 @@ END;
 create_search_for_film_procedure = """
 CREATE PROCEDURE SearchForFilm(
     search_term varchar(200),
-    sort_term varchar(50)
+    sort_term varchar(50),
+    start_bound int,
+    numberOfFilms int
 )
 BEGIN
-    SELECT res.id
+    SELECT *
     from (
              ( -- search over film details
                  SELECT id,
@@ -543,7 +545,8 @@ BEGIN
                           when strcmp(sort_term, 'release_date') = 0 then release_date
                           else name
                           end DESC
-         ) as res;
+         ) as res
+    limit start_bound,numberOfFilms;
 END;
 """
 
@@ -709,6 +712,28 @@ BEGIN
     insert into playlist_film(playlist_id, film_id) value (playlist_id_param,film_id_param);
 END;
 """
-create_divide_rows_function = """
 
+create_divide_rows_function = """
+CREATE PROCEDURE ShowFilms(
+    start_bound int,
+    numberOfFilms int)
+BEGIN
+    SELECT *
+    FROM film
+    LIMIT start_bound,numberOfFilms;
+END;
+
+CREATE PROCEDURE ShowPlaylistFilms(
+    playlist_id_param int,
+    start_bound int,
+    numberOfFilms int)
+BEGIN
+    SELECT *
+    FROM film
+    WHERE film.id in
+          (
+              select playlist_film.film_id from playlist_film where playlist_film.playlist_id = playlist_id_param
+          )
+    LIMIT start_bound,numberOfFilms;
+END;
 """

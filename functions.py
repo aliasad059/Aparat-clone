@@ -158,11 +158,14 @@ def showPlaylists(logger, cursor, creator_username: str):
         logger.error(f'[ShowPlaylists] {e.msg}')
 
 
-def showPlaylistFilms(logger, cursor, playlist_id_param):
+def showPlaylistFilms(logger, cursor, playlist_id_param, start_bound, number_of_films):
     try:
-        cursor.callproc('ShowPlaylists', args=(creator_username,))
+        cursor.callproc('ShowPlaylistFilm', args=(playlist_id_param, start_bound, number_of_films))
+        if cursor.rowcount < number_of_films:
+            return False
+        return True
     except Error as e:
-        logger.error(f'[ShowPlaylists] {e.msg}')
+        logger.error(f'[ShowPlaylistFilm] {e.msg}')
 
 
 def createPlaylist(logger, cursor, creator_username_param: str, playlist_name_param: str, playlist_description: str):
@@ -172,9 +175,33 @@ def createPlaylist(logger, cursor, creator_username_param: str, playlist_name_pa
         logger.error(f'[CreatePlaylist] {e.msg}')
 
 
-def addFilmTo(logger, cursor, playlist_id_param, film_id_parm):
-    return 0
+def addFilmTo(logger, cursor, creator_username_param, playlist_id_param, film_id_parm):
+    try:
+        cursor.callproc('AddNewFilmToPlaylist',
+                        args=(creator_username_param, playlist_id_param, film_id_parm,))
+    except Error as e:
+        logger.error(f'[AddNewFilmToPlaylist] {e.msg}')
 
 
-def showFilms(logger, cursor):
-    return 0
+def showFilms(logger, cursor, start_bound, number_of_films):
+    try:
+        cursor.callproc('ShowFilms', args=(start_bound, number_of_films,))
+        if cursor.rowcount < number_of_films:
+            return False
+        return True
+    except Error as e:
+        logger.error(f'[ShowFilms] {e.msg}')
+
+
+def watchFilm(logger, cursor, viewer_username, film_id):
+    try:
+        cursor.callproc('WatchFilm', args=(viewer_username, film_id,))
+    except Error as e:
+        logger.error(f'[WatchFilm] {e.msg}')
+
+
+def finishWatching(logger, cursor, viewer_username, film_id):
+    try:
+        cursor.callproc('FinishWatching', args=(viewer_username, film_id,))
+    except Error as e:
+        logger.error(f'[FinishWatching] {e.msg}')

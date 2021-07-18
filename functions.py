@@ -1,5 +1,12 @@
 # functions that are needed to interact with database
 from mysql.connector import Error
+from prettytable import *
+
+
+def printHeader(str):
+    header = PrettyTable(['...Aparat...'])
+    header.add_row([str])
+    print(header)
 
 
 def signIn(logger, cursor, option, username: str, password: str):
@@ -65,7 +72,61 @@ def increaseBalance(logger, cursor, username, amount):
         return
 
 
-def printHeader(str):
-    print('######################################################')
-    print(str)
-    print('######################################################')
+def getInfo(logger, cursor, username):
+    try:
+        operation = "SELECT * FROM user WHERE user.username = %(username_param)s"
+        cursor.execute(operation, {'username_param': username})
+        info = from_db_cursor(cursor)
+        print(info)
+    except Error as e:
+        logger.error(f'[GetInfo] {e.msg}')
+        return
+
+
+def changePassword(logger, cursor, username: str, new_password: str):
+    try:
+        cursor.callproc('ChangePassword', args=(username, new_password,))
+    except Error as e:
+        logger.error(f'[ChangePassword] {e.msg}')
+
+
+def changeFirstName(logger, cursor, username: str, new_firstname: str):
+    try:
+        cursor.callproc('ChangeFirstName', args=(username, new_firstname,))
+    except Error as e:
+        logger.error(f'[ChangeFirstName] {e.msg}')
+
+
+def changeLastName(logger, cursor, username: str, new_lastname: str):
+    try:
+        cursor.callproc('ChangeLastName', args=(username, new_lastname,))
+    except Error as e:
+        logger.error(f'[ChangeLastName] {e.msg}')
+
+
+def changePhoneNumber(logger, cursor, username: str, new_phone_number: str):
+    try:
+        cursor.callproc('ChangePhoneNumber', args=(username, new_phone_number,))
+    except Error as e:
+        logger.error(f'[ChangePhoneNumber] {e.msg}')
+
+
+def changeEmail(logger, cursor, username: str, new_email: str):
+    try:
+        cursor.callproc('ChangeEmail', args=(username, new_email,))
+    except Error as e:
+        logger.error(f'[ChangeEmail] {e.msg}')
+
+
+def changeMelliCode(logger, cursor, username: str, new_melli_code: str):
+    try:
+        cursor.callproc('ChangeMelliCode', args=(username, new_melli_code,))
+    except Error as e:
+        logger.error(f'[ChangeMelliCode] {e.msg}')
+
+
+def inviteFriend(logger, cursor, inviter: str, invited: str):
+    try:
+        cursor.callproc('Invite', args=(inviter, invited,))
+    except Error as e:
+        logger.error(f'[Invite] {e.msg}')

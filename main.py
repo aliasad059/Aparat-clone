@@ -36,7 +36,8 @@ config = {
     'password': 'secret',
     'host': '127.0.0.1',
     'database': 'Aparat',
-    'buffered': True
+    'buffered': True,
+    'autocommit': True
 }
 
 if __name__ == '__main__':
@@ -118,21 +119,52 @@ if __name__ == '__main__':
                                         elif com.lower() == 'tag':  #
                                             print('')
                                 else:
-                                    in_user_panel = True
-                                    while in_user_panel:
+                                    while True:
                                         command = input('>>')
                                         try:
                                             com, *args = command.split()
                                         except ValueError:
                                             continue
                                         if com.lower() in ('q', 'quit'):
-                                            in_user_panel = False
-                                            continue
+                                            break
                                         elif com.lower() in ('h', 'help'):
                                             print('help command in user panel')
 
+                                        elif com.lower() == 'info':
+                                            functions.getInfo(logger, cursor, username)
+
                                         elif com.lower() == 'edit':  # edit personal info
-                                            print('edit personal info')
+                                            functions.printHeader('In edit information panel ')
+                                            while True:
+                                                command = input('>>>')
+                                                try:
+                                                    com, *args = command.split()
+                                                except ValueError:
+                                                    continue
+                                                if com.lower() in ('q', 'quit'):
+                                                    break
+                                                elif com.lower() in ('h', 'help'):
+                                                    print('edit info help')
+                                                elif com.lower() == 'info':
+                                                    functions.getInfo(logger, cursor, username)
+                                                elif com.lower() == 'password':
+                                                    new_info = input('New Password>>>')
+                                                    functions.changePassword(logger, cursor, username, new_info)
+                                                elif com.lower() in ('last', 'last_name', 'lastname'):
+                                                    new_info = input('New LastName >>>')
+                                                    functions.changeLastName(logger, cursor, username, new_info)
+                                                elif com.lower() in ('first', 'first_name', 'firstname'):
+                                                    new_info = input('New FirstName>>>')
+                                                    functions.changeFirstName(logger, cursor, username, new_info)
+                                                elif com.lower() in ('email'):
+                                                    new_info = input('New Email>>>')
+                                                    functions.changeEmail(logger, cursor, username, new_info)
+                                                elif com.lower() in ('phone_number', 'phonenumber', 'phone'):
+                                                    new_info = input('New PhoneNumber>>>')
+                                                    functions.changePhoneNumber(logger, cursor, username, new_info)
+                                                elif com.lower() in ('melli', 'melli_code', 'mellicode'):
+                                                    new_info = input('New MelliCode>>>')
+                                                    functions.changeMelliCode(logger, cursor, username, new_info)
 
                                         elif com.lower() == 'wallet':  # increase balance
                                             functions.printHeader('In your wallet:')
@@ -152,11 +184,14 @@ if __name__ == '__main__':
                                                 elif com.lower() == 'increase':
                                                     functions.increaseBalance(logger, cursor, username, args[0])
 
+                                        elif com.lower() == 'invite':  # invite friend
+                                            inviter_username = input('Inviter Username>>')
+                                            functions.inviteFriend(logger, cursor, inviter_username, username)
+
                                         elif com.lower() == 'upgrade':  # upgrade (show vip membership status, upgrade from point or credit)
                                             print('')
-                                        elif com.lower() == 'invite':  # invite friend
-                                            print('')
-                                        elif com.lower() == 'watch':  # show films(search,sort,buy vp films)
+
+                                        elif com.lower() in ('watch', 'show','film'):  # show films(search,sort,buy vp films)
                                             print('')
                                         elif com.lower() == 'playlist':  # create playlist, show myplaylist(add, remove film), show all playlist
                                             print('')

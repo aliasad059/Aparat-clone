@@ -686,9 +686,9 @@ CREATE PROCEDURE ShowPlaylists(
 )
 BEGIN    
     if creator_username_param is NULL then
-        select playlist.name,playlist.description from playlist;
+        select * from playlist;
     else
-        select playlist.name,playlist.description from playlist where playlist.creator_username =creator_username_param;
+        select * from playlist where playlist.creator_username =creator_username_param;
     end if;
 END;
 

@@ -144,7 +144,7 @@ def showVipMembershipStatus(logger, cursor, username_param):
         logger.error(f'[Status] {e.msg}')
 
 
-def upgrade_vip_membership(logger, cursor, username_param: str, price: int, p_type: str):
+def upgradeVipMembership(logger, cursor, username_param: str, price: int, p_type: str):
     try:
         cursor.callproc('BuyVipMembership', args=(username_param, price, p_type,))
     except Error as e:
@@ -154,13 +154,27 @@ def upgrade_vip_membership(logger, cursor, username_param: str, price: int, p_ty
 def showPlaylists(logger, cursor, creator_username: str):
     try:
         cursor.callproc('ShowPlaylists', args=(creator_username,))
+        table = PrettyTable(['id', 'name', 'description', 'creator'])
+        for res in cursor.stored_results():
+            data = res.fetchall()
+            for i in data:
+                table.add_row(i)
+        print(table)
     except Error as e:
         logger.error(f'[ShowPlaylists] {e.msg}')
 
 
 def showPlaylistFilms(logger, cursor, playlist_id_param, start_bound, number_of_films):
     try:
-        cursor.callproc('ShowPlaylistFilm', args=(playlist_id_param, start_bound, number_of_films))
+        cursor.callproc('ShowPlaylistFilms', args=(playlist_id_param, start_bound, number_of_films))
+        table = PrettyTable(['id', 'name', 'release_date',
+                             'price', 'details', 'viewers',
+                             'average rate', 'all rates'])
+        for res in cursor.stored_results():
+            data = res.fetchall()
+            for i in data:
+                table.add_row(i)
+        print(table)
         if cursor.rowcount < number_of_films:
             return False
         return True
@@ -186,6 +200,14 @@ def addFilmTo(logger, cursor, creator_username_param, playlist_id_param, film_id
 def showFilms(logger, cursor, start_bound, number_of_films):
     try:
         cursor.callproc('ShowFilms', args=(start_bound, number_of_films,))
+        table = PrettyTable(['id', 'name', 'release_date',
+                             'price', 'details', 'viewers',
+                             'average rate', 'all rates'])
+        for res in cursor.stored_results():
+            data = res.fetchall()
+            for i in data:
+                table.add_row(i)
+        print(table)
         if cursor.rowcount < number_of_films:
             return False
         return True
@@ -196,8 +218,10 @@ def showFilms(logger, cursor, start_bound, number_of_films):
 def watchFilm(logger, cursor, viewer_username, film_id):
     try:
         cursor.callproc('WatchFilm', args=(viewer_username, film_id,))
+        return True
     except Error as e:
         logger.error(f'[WatchFilm] {e.msg}')
+        return False
 
 
 def finishWatching(logger, cursor, viewer_username, film_id):
@@ -205,3 +229,21 @@ def finishWatching(logger, cursor, viewer_username, film_id):
         cursor.callproc('FinishWatching', args=(viewer_username, film_id,))
     except Error as e:
         logger.error(f'[FinishWatching] {e.msg}')
+
+
+def buyVipFilm(logger, cursor, buyer_username, film_id):
+    print('Enter purchase type(points or credit)')
+    purchase_type = input('>>>')
+    try:
+        cursor.callproc('BuyVipFilm', args=(buyer_username, film_id, purchase_type))
+    except Error as e:
+        logger.error(f'[BuyVipFilm] {e.msg}')
+
+
+# TODO: contains film details, creators, tags
+def filmDetail(logger, cursor, film_id):
+    return 0
+
+# TODO: comment panel
+# TODO: test prev, next with 15 insertions
+# TODO: admin panel

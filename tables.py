@@ -88,7 +88,7 @@ create table film_creator
 create_table_watch_film = """
 create table watch_film
 (
-    film_id         int primary key,
+    film_id         int ,
     viewer_username varchar(50),
     has_finished    bool default false
 );

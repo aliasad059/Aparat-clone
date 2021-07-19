@@ -197,8 +197,6 @@ if __name__ == '__main__':
                                                                                                      category_id,
                                                                                                      args[0])
 
-
-
                                 else:
                                     while True:
                                         command = input('>>')
@@ -406,6 +404,45 @@ if __name__ == '__main__':
                                                                 break
                                                     if len(args) == 2:
                                                         functions.filmPanel(logger, cursor, username, args[1])
+
+                                        elif com.lower() in ('category', 'categories'):
+                                            functions.showCategories(logger, cursor)
+                                            if len(args) == 0:
+                                                args = list()
+                                                args.append(input('Category Number>>>'))
+                                            if len(args) == 1:
+                                                move_next = functions.showCategoryFilms(logger, cursor, args[0], 0, 10)
+                                                current_position = 0
+                                                while True:
+                                                    print('Enter the film\'s number.')
+                                                    print('Or enter next, prev to see other films')
+                                                    com = input('>>>>')
+                                                    if com.lower() in ('q', 'quit'):
+                                                        break
+                                                    elif com.lower() == 'next':
+                                                        if move_next:
+                                                            current_position += 10
+                                                            move_next = functions.showCategoryFilms(logger,
+                                                                                                    cursor,
+                                                                                                    args[0],
+                                                                                                    current_position,
+                                                                                                    10)
+                                                        else:
+                                                            continue
+                                                    elif com.lower() == 'prev':
+                                                        if current_position - 10 >= 0:
+                                                            current_position -= 10
+                                                            functions.showCategoryFilms(logger, cursor, args[0],
+                                                                                        current_position, 10)
+                                                            move_next = True
+                                                        else:
+                                                            continue
+                                                    else:
+                                                        args.append(com)
+                                                        break
+                                            if len(args) == 2:
+                                                functions.filmPanel(logger, cursor, username, args[1])
+
 
                                         elif com.lower() in ('watch', 'show', 'film'):
                                             film_id = functions.chooseFilm(logger, cursor)

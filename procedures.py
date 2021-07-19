@@ -400,106 +400,26 @@ BEGIN
 END;
 """
 
-create_add_new_category_procedure = """
-CREATE PROCEDURE AddNewCategory(
-    name_param varchar(50)
+create_category_procedures = """
+CREATE PROCEDURE ShowCategoryFilms(
+    category_id int,
+    start_bound int,
+    number_of_films int
 )
 BEGIN
-    insert into category (name)
-    values (name_param);
-END;
-"""
-
-create_remove_category_procedure = """
-CREATE PROCEDURE RemoveCategory(
-    name_param varchar(50)
-)
-BEGIN
-    delete
-    from category
-    where category.name = name_param;
-
-    delete
-    from film_category
-    where film_category.category_name = name_param;
-END;
-"""
-
-create_add_new_film_to_category_procedure = """
-CREATE PROCEDURE AddNewFilmToCategory(
-    film_id_param varchar(50),
-    category_name_param varchar(50)
-)
-BEGIN
-    insert into film_category (film_id, category_name)
-    values (film_id_param, category_name_param);
+    select *
+    from film
+    where film.id in
+          (
+              select film_category.film_id
+              from film_category
+              where film_category.category_id = category_id
+          )
+    limit start_bound,number_of_films;
 END;
 
-"""
-
-create_remove_film_from_category_procedure = """
-CREATE PROCEDURE RemoveFilmFromCategory(
-    film_id_param varchar(50),
-    category_name_param varchar(50)
-)
-BEGIN
-    delete
-    from film_category
-    where (film_category.category_name, film_category.film_id) = (category_name_param, film_id_param);
-END;
-"""
-
-create_add_new_tag_procedure = """
-CREATE PROCEDURE AddNewTag(
-    name_param varchar(50)
-)
-BEGIN
-    insert into tag (tag_value)
-    values (name_param);
-END;
-"""
-
-create_remove_tag_procedure = """
-CREATE PROCEDURE RemoveTag(
-    name_param varchar(50)
-)
-BEGIN
-    delete
-    from tag
-    where tag.tag_value = name_param;
-
-    delete
-    from film_tag
-    where film_tag.tag_name = name_param;
-END;
-"""
-
-create_add_new_film_to_tag_procedure = """
-CREATE PROCEDURE AddNewFilmToTag(
-    film_id_param varchar(50),
-    tag_value_param varchar(50)
-)
-BEGIN
-    insert into film_category (film_id, category_name)
-    values (film_id_param, tag_value_param);
-END;
 
 """
-
-create_remove_film_from_tag_procedure = """
-CREATE PROCEDURE RemoveFilmFromTag(
-    film_id_param varchar(50),
-    tag_value_param varchar(50)
-)
-BEGIN
-    delete
-    from film_tag
-    where (film_tag.film_id, film_tag.tag_name) = (film_id_param, tag_value_param);
-END;
-"""
-
-# TODO: create_remove_film_procedure
-# remove from list, film_category, film_tag
 
 create_search_for_film_procedure = """
 CREATE PROCEDURE SearchForFilm(

@@ -551,6 +551,20 @@ END;
 """
 
 create_watch_film_procedures = """
+CREATE PROCEDURE CheckIfBought(
+    buyer_username_param varchar(50),
+    film_id_param int)
+BEGIN
+    if (buyer_username_param, film_id_param) not in
+       (
+           select *
+           from buy_vip_film
+       ) then
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You have not bought this film before.', MYSQL_ERRNO = 9013;
+    end if;
+END;
+
 CREATE PROCEDURE WatchFilm(
     username_param varchar(50),
     film_id_param int
@@ -593,12 +607,15 @@ END;
 
 create_comment_procedures = """
 CREATE PROCEDURE ShowComments(
-    film_id_param int 
+    film_id_param int,
+    start_bound int,
+    numberOfFilms int
 )
 BEGIN
-    select *
-    from film_comment
-    where film_comment.film_id = film_id_param;
+    SELECT film_comment.viewer_username,film_comment.comment,film_comment.rate
+    FROM film_comment
+    WHERE film_comment.film_id = film_id_param
+    LIMIT start_bound,numberOfFilms;
 END;
 
 CREATE PROCEDURE AddNewComments(
@@ -736,4 +753,6 @@ BEGIN
           )
     LIMIT start_bound,numberOfFilms;
 END;
+
+
 """

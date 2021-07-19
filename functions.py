@@ -170,12 +170,14 @@ def showPlaylistFilms(logger, cursor, playlist_id_param, start_bound, number_of_
         table = PrettyTable(['id', 'name', 'release_date',
                              'price', 'details', 'viewers',
                              'average rate', 'all rates'])
+        rowcount = 0
         for res in cursor.stored_results():
             data = res.fetchall()
+            rowcount = len(data)
             for i in data:
                 table.add_row(i)
         print(table)
-        if cursor.rowcount < number_of_films:
+        if rowcount < number_of_films:
             return False
         return True
     except Error as e:
@@ -203,12 +205,14 @@ def showFilms(logger, cursor, start_bound, number_of_films):
         table = PrettyTable(['id', 'name', 'release_date',
                              'price', 'details', 'viewers',
                              'average rate', 'all rates'])
+        rowcount = 0
         for res in cursor.stored_results():
             data = res.fetchall()
+            rowcount = len(data)
             for i in data:
                 table.add_row(i)
         print(table)
-        if cursor.rowcount < number_of_films:
+        if rowcount < number_of_films:
             return False
         return True
     except Error as e:
@@ -240,10 +244,64 @@ def buyVipFilm(logger, cursor, buyer_username, film_id):
         logger.error(f'[BuyVipFilm] {e.msg}')
 
 
-# TODO: contains film details, creators, tags
-def filmDetail(logger, cursor, film_id):
-    return 0
+def checkIfBought(logger, cursor, buyer_username, film_id):
+    try:
+        cursor.callproc('CheckIfBought', args=(buyer_username, film_id,))
+        return True
+    except Error as e:
+        logger.error(f'[CheckIfBought] {e.msg}')
+        return False
+
+
+def addNewComment(logger, cursor, username,film_id, comment, rate):
+    try:
+        cursor.callproc('AddNewComments', args=(username,film_id, comment, rate,))
+    except Error as e:
+        logger.error(f'[AddNewComments] {e.msg}')
+
+
+def showComments(logger, cursor, film_id, start_bound, number_of_comments):
+    try:
+        cursor.callproc('ShowComments', args=(film_id, start_bound, number_of_comments,))
+        table = PrettyTable(['Viewer', 'Comment', 'Rate'])
+        rowcount = 0
+        for res in cursor.stored_results():
+            data = res.fetchall()
+            rowcount = len(data)
+            for i in data:
+                table.add_row(i)
+        print(table)
+        if rowcount < number_of_comments:
+            return False
+        return True
+    except Error as e:
+        logger.error(f'[ShowComments] {e.msg}')
+
+
+def isVip(logger, cursor, film_id):
+    try:
+        cursor.callproc('IsVIP', args=(film_id,))
+        return True
+    except Error:
+        return False
+
+
+def filmInfo(logger, cursor, film_id_param):
+    try:
+        print('Film Info:')
+        operation = "SELECT * FROM film WHERE film.id = %(film_id_param)s"
+        cursor.execute(operation, {'film_id_param': film_id_param})
+        table = from_db_cursor(cursor)
+        print(table)
+        print('Tags:')
+        operation = "SELECT film_tag.tag_name FROM film_tag WHERE film_tag.film_id = %(film_id_param)s"
+        cursor.execute(operation, {'film_id_param': film_id_param})
+        table = from_db_cursor(cursor)
+        print(table)
+
+    except Error as e:
+        logger.error(f'[FilmInfo] {e.msg}')
 
 # TODO: comment panel
-# TODO: test prev, next with 15 insertions
 # TODO: admin panel
+# TODO: SearchForFilm: admin panel

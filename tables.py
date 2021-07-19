@@ -41,8 +41,8 @@ create table film
 create_table_category = """
 create table category
 (
-    
-    name varchar(50) primary key 
+    id int auto_increment primary key,
+    name varchar(50)
 );
 """
 
@@ -50,10 +50,10 @@ create_table_film_category = """
 create table film_category
 (
     film_id       int,
-    category_name   varchar(50),
-    primary key (film_id,category_name),
+    category_id   int,
+    primary key (film_id,category_id),
     foreign key (film_id) references film (id) on delete cascade ,
-    foreign key (category_name) references category (name) on delete cascade 
+    foreign key (category_id) references category (id) on delete cascade 
 );
 """
 

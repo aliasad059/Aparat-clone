@@ -68,20 +68,18 @@ create table film_tag
 (
     film_id       int,
     tag_name   varchar(50),
-    primary key (film_id,tag_name),
-    foreign key (film_id) references film (id),
-    foreign key (tag_name) references tag (tag_value)
+    foreign key (film_id) references film (id) on delete cascade 
 );
 """
 
 create_table_film_creator = """
 create table film_creator
 (
-    film_id           int primary key,
+    film_id           int ,
     creator_firstname varchar(50),
     creator_lastname  varchar(50),
     role              varchar(50),
-    foreign key (film_id) references film (id)
+    foreign key (film_id) references film (id) on delete cascade
 );
 """
 

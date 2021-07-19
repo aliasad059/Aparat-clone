@@ -88,33 +88,35 @@ if __name__ == '__main__':
                                 username = args[1]
                                 password = args[2]
                                 isAdmin = False
-                                if args[1] in ('-a', '--admin'):
+                                if args[0] in ('-a', '--admin'):
                                     isAdmin = True
                                 functions.printHeader('Greeting ' + username + '!\nHere is your Apart panel.')
 
                                 if isAdmin:
-                                    in_admin_panel = True
-                                    while in_admin_panel:
+                                    while True:
                                         command = input('>>')
                                         try:
                                             com, *args = command.split()
                                         except ValueError:
                                             continue
                                         if com.lower() in ('q', 'quit'):
-                                            in_admin_panel = False
-                                            continue
+                                            break
                                         elif com.lower() in ('h', 'help'):
-                                            print('help command in user panel')
-
-                                        elif com.lower() == 'add':  #
-                                            print('')
-                                        elif com.lower() == 'remove':  #
-                                            print('')
-                                        elif com.lower() == 'edit':  #
-                                            print('')
-                                        elif com.lower() == 'update':  #
-                                            print('')
-                                        elif com.lower() == 'category':  #
+                                            print('help command in admin panel')
+                                        elif com.lower() == 'add':
+                                            functions.addNewFilm(logger, cursor)
+                                        elif com.lower() in ('remove', 'delete'):
+                                            film_id = functions.chooseFilm(logger, cursor)
+                                            functions.removeFilm(logger, cursor, film_id)
+                                        elif com.lower() in ('edit', 'update'):
+                                            film_id = functions.chooseFilm(logger, cursor)
+                                            functions.editFilm(logger, cursor, film_id)
+                                        elif com.lower() == 'read':
+                                            film_id = functions.chooseFilm(logger, cursor)
+                                            functions.filmInfo(logger,cursor,film_id)
+                                            functions.filmTags(logger,cursor,film_id)
+                                            functions.filmCreators(logger,cursor,film_id)
+                                        elif com.lower() == 'category':
                                             print('')
                                         elif com.lower() == 'tag':  #
                                             print('')
@@ -236,7 +238,7 @@ if __name__ == '__main__':
                                                             continue
                                                         if com.lower() in ('q', 'quit'):
                                                             break
-                                                        elif com.lower() in ('all','show'):
+                                                        elif com.lower() in ('all', 'show'):
                                                             functions.showPlaylists(logger, cursor, username)
                                                         elif com.lower() == 'create':
                                                             playlist_name = input('Playlist Name>>>>')

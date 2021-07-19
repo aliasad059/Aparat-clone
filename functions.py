@@ -12,7 +12,6 @@ def printHeader(str):
 def signIn(logger, cursor, option, username: str, password: str):
     if option in ('-a', '--admin'):
         try:
-
             cursor.callproc('Admin_SignIn', args=(username, password))
             logger.info(f'[SignIn] Admin <{username}> successfully signed in.')
             return True
@@ -472,4 +471,107 @@ def chooseFilm(logger, cursor):
                 else:
                     return com
 
-# TODO: admin panel
+
+def addNewFilm(logger, cursor):
+    print('add new film')
+    name = input('name>>>')
+    details = input('details>>>')
+    price = input('price(press Enter ro set for free)>>>')
+    release_date = input('release date(press Enter to choose current date)>>>')
+    film_id = ''
+    try:
+        if price == '':
+            price = None
+        if release_date == '':
+            release_date = None
+        cursor.callproc('addNewFilm', args=(name, release_date, price, details,))
+    except Error as e:
+        logger.error(f'[addNewFilm] {e.msg}')
+
+    operation = "SELECT film.id FROM film Order By film.id DESC LIMIT 1"
+    cursor.execute(operation)
+    res = cursor.fetchone()
+    film_id = res[0]
+
+    while True:
+        command = input('Add Creators? Enter \'YES\' or \'NO\')>>>')
+        if command.lower() == 'yes':
+            creator_firstname = input('Creator FirstName>>>')
+            creator_lastname = input('Creator LastName>>>')
+            role = input(creator_firstname + ' ' + creator_lastname + '\'s Role>>>')
+            print(film_id)
+            add_creator = ("INSERT INTO film_creator "
+                           "(film_id,creator_firstname,creator_lastname,role) "
+                           "VALUES (%s, %s, %s,  %s)")
+            creator_values = (film_id, creator_firstname, creator_lastname, role)
+
+            cursor.execute(add_creator, creator_values)
+        else:
+            break
+
+    while True:
+        command = input('Add Tags? Enter \'YES\' or \'NO\')>>>')
+        if command.lower() == 'yes':
+            cname = input('Tag>>>')
+            add_creator = ("INSERT INTO film_tag "
+                           "(film_id,tag_name) "
+                           "VALUES (%s, %s)")
+            creator_values = (film_id, cname)
+            cursor.execute(add_creator, creator_values)
+        else:
+            break
+
+    while True:
+        command = input('Add this film to categories? Enter \'YES\' or \'NO\')>>>')
+        if command.lower() == 'yes':
+            cname = input('CategoryName>>>')
+            add_creator = ("INSERT INTO film_category "
+                           "(film_id,category_name) "
+                           "VALUES (%s, %s)")
+            creator_values = (film_id, cname)
+            cursor.execute(add_creator, creator_values)
+        else:
+            break
+
+
+def removeFilm(logger, cursor, film_id):
+    print('You are going to remove following film from database:')
+    filmInfo(logger, cursor, film_id)
+    make_sure = input('Are you sure? Enter YES else Enter NO>>')
+    if make_sure.lower() == 'yes':
+        try:
+            operation = "DELETE FROM film WHERE film.id = %(film_id)s"
+            cursor.execute(operation, {'film_id': film_id})
+
+        except Error as e:
+            logger.error(f'[DeleteFilm] {e.msg}')
+
+
+def editFilm(logger, cursor, film_id):
+    print('You are going to edit following film from database:')
+    filmInfo(logger, cursor, film_id)
+    print('What do you want to update? (name, date, price, details or nothing.')
+    print('Separate your choices with space.')
+    edit_options = input('>>').split()
+    name = None
+    price = None
+    details = None
+    release_date = None
+
+    if 'name' in edit_options:
+        name = input('New Name>>')
+    if 'price' in edit_options:
+        price = input('New Price>>')
+    if 'date' in edit_options:
+        release_date = input('New Date(yyyy-mm-dd)>>')
+    if 'details' in edit_options:
+        details = ''
+        while True:
+            inp = input('New Details(Type exit to stop)>>')
+            if inp == 'exit':
+                break
+            details = details + " " + inp
+    try:
+        cursor.callproc('EditFilmInfo', args=(film_id,name, release_date, price, details,))
+    except Error as e:
+        logger.error(f'[EditFilmInfo] {e.msg}')

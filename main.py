@@ -111,15 +111,94 @@ if __name__ == '__main__':
                                         elif com.lower() in ('edit', 'update'):
                                             film_id = functions.chooseFilm(logger, cursor)
                                             functions.editFilm(logger, cursor, film_id)
-                                        elif com.lower() == 'read':
+                                        elif com.lower() in ('read', 'show', 'films'):
                                             film_id = functions.chooseFilm(logger, cursor)
-                                            functions.filmInfo(logger,cursor,film_id)
-                                            functions.filmTags(logger,cursor,film_id)
-                                            functions.filmCreators(logger,cursor,film_id)
+                                            functions.filmInfo(logger, cursor, film_id)
+                                            functions.filmTags(logger, cursor, film_id)
+                                            functions.filmCreators(logger, cursor, film_id)
                                         elif com.lower() == 'category':
-                                            print('')
-                                        elif com.lower() == 'tag':  #
-                                            print('')
+                                            while True:
+                                                command = input('>>>')
+                                                try:
+                                                    com, *args = command.split()
+                                                except ValueError:
+                                                    continue
+                                                if com.lower() in ('q', 'quit'):
+                                                    break
+                                                elif com.lower() in ('h', 'help'):
+                                                    print('help command in category panel')
+                                                elif com.lower() in ('add', 'new', 'category'):
+                                                    if len(args) == 0:
+                                                        args = list()
+                                                        category_name = input('Category Name>>')
+                                                        args.append(category_name)
+                                                    functions.addNewCategory(logger, cursor, category_name)
+
+                                                elif com.lower() in ('all', 'select', 'choose'):
+
+                                                    while True:
+                                                        functions.showCategories(logger, cursor)
+                                                        print('Enter category number otherwise \'quit\' to exit.')
+                                                        command = input('>>>')
+                                                        try:
+                                                            com, *args = command.split()
+                                                        except ValueError:
+                                                            continue
+                                                        if com.lower() in ('q', 'quit'):
+                                                            break
+                                                        else:
+                                                            category_id = com
+                                                            print('In category ' + category_id + ':')
+                                                            move_next = functions.showCategoryFilms(logger, cursor,
+                                                                                                    category_id, 0, 10)
+                                                            current_position = 0
+                                                            while True:
+                                                                command = input('>>>>')
+                                                                try:
+                                                                    com, *args = command.split()
+                                                                except ValueError:
+                                                                    continue
+                                                                if com.lower() in ('q', 'quit'):
+                                                                    break
+                                                                elif com.lower() == 'next':
+                                                                    if move_next:
+                                                                        current_position += 10
+                                                                        move_next = functions.showCategoryFilms(logger,
+                                                                                                                cursor,
+                                                                                                                category_id,
+                                                                                                                0, 10)
+
+                                                                    else:
+                                                                        continue
+                                                                elif com.lower() == 'prev':
+                                                                    if current_position - 10 >= 0:
+                                                                        current_position -= 10
+                                                                        move_next = functions.showCategoryFilms(logger,
+                                                                                                                cursor,
+                                                                                                                category_id,
+                                                                                                                0, 10)
+                                                                        move_next = True
+                                                                    else:
+                                                                        continue
+                                                                elif com.lower() == 'add':
+                                                                    if len(args) == 0:
+                                                                        args = list()
+                                                                        args.append(
+                                                                            functions.chooseFilm(logger, cursor))
+                                                                    if args[0] != -1:
+                                                                        functions.addFilmToCategory(logger, cursor,
+                                                                                                    category_id,
+                                                                                                    args[0])
+                                                                elif com.lower() in ('delete', 'remove'):
+                                                                    if len(args) == 0:
+                                                                        args = list()
+                                                                        args.append(input('Film Number>>>'))
+                                                                    functions.removeFilmFromCategory(logger, cursor,
+                                                                                                     category_id,
+                                                                                                     args[0])
+
+
+
                                 else:
                                     while True:
                                         command = input('>>')

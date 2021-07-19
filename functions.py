@@ -521,18 +521,6 @@ def addNewFilm(logger, cursor):
         else:
             break
 
-    while True:
-        command = input('Add this film to categories? Enter \'YES\' or \'NO\')>>>')
-        if command.lower() == 'yes':
-            cname = input('CategoryName>>>')
-            add_creator = ("INSERT INTO film_category "
-                           "(film_id,category_name) "
-                           "VALUES (%s, %s)")
-            creator_values = (film_id, cname)
-            cursor.execute(add_creator, creator_values)
-        else:
-            break
-
 
 def removeFilm(logger, cursor, film_id):
     print('You are going to remove following film from database:')
@@ -572,6 +560,68 @@ def editFilm(logger, cursor, film_id):
                 break
             details = details + " " + inp
     try:
-        cursor.callproc('EditFilmInfo', args=(film_id,name, release_date, price, details,))
+        cursor.callproc('EditFilmInfo', args=(film_id, name, release_date, price, details,))
     except Error as e:
         logger.error(f'[EditFilmInfo] {e.msg}')
+
+
+def addNewCategory(logger, cursor, category_name):
+    try:
+        add_film = ("INSERT INTO category "
+                    "(id,name) "
+                    "VALUES (%s, %s)")
+        category_values = (0, category_name)
+        cursor.execute(add_film, category_values)
+    except Error as e:
+        logger.error(f'[AddNewCategory] {e.msg}')
+
+
+def addFilmToCategory(logger, cursor, category_id, film_id):
+    try:
+        add_film = ("INSERT INTO film_category "
+                    "(film_id, category_id) "
+                    "VALUES (%s, %s)")
+        category_values = (film_id, category_id)
+        cursor.execute(add_film, category_values)
+    except Error as e:
+        logger.error(f'[AddFilmToCategory] {e.msg}')
+
+
+def removeFilmFromCategory(logger, cursor, category_id, film_id):
+    try:
+        operation = "DELETE FROM film_category WHERE film_category.film_id = %(film_id)s and film_category.category_id = %(category_id)s"
+        cursor.execute(operation, {'film_id': film_id, 'category_id': category_id})
+    except Error as e:
+        logger.error(f'[RemoveFilmFromCategory] {e.msg}')
+
+
+def showCategories(logger, cursor):
+    try:
+        operation = "SELECT * FROM category"
+        cursor.execute(operation)
+        categories_table = from_db_cursor(cursor)
+        print(categories_table)
+    except Error as e:
+        logger.error(f'[ShowCategories] {e.msg}')
+
+
+def showCategoryFilms(logger, cursor, category_id_param, start_bound, number_of_films):
+    try:
+        cursor.callproc('ShowCategoryFilms', args=(category_id_param, start_bound, number_of_films))
+        table = PrettyTable(['id', 'name', 'release_date',
+                             'price', 'details', 'viewers',
+                             'average rate', 'all rates'])
+        rowcount = 0
+        for res in cursor.stored_results():
+            data = res.fetchall()
+            rowcount = len(data)
+            for i in data:
+                table.add_row(i)
+        print(table)
+        if rowcount < number_of_films:
+            return False
+        return True
+    except Error as e:
+        logger.error(f'[ShowCategoryFilms] {e.msg}')
+
+# TODO: search in category in userpanel

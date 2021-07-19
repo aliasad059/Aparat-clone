@@ -551,6 +551,16 @@ END;
 """
 
 create_watch_film_procedures = """
+CREATE PROCEDURE IsVIP(
+film_id_param int
+)
+BEGIN
+    if (SELECT film.price FROM film WHERE film.id = film_id_param) = 0 then
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'This film is free.', MYSQL_ERRNO = 9019;
+    end if;
+END;
+
 CREATE PROCEDURE CheckIfBought(
     buyer_username_param varchar(50),
     film_id_param int)

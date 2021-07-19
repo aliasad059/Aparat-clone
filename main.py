@@ -69,21 +69,21 @@ if __name__ == '__main__':
                         elif com.lower() == 'signup':
                             if len(args) != 7:
                                 args = list()
-                                args.append(input('Username> '))
-                                args.append(input('Password> '))
-                                args.append(input('FirstName> '))
-                                args.append(input('LastName> '))
-                                args.append(input('Email> '))
-                                args.append(input('PhoneNumber> '))
-                                args.append(input('MelliCode> '))
+                                args.append(input('Username>'))
+                                args.append(input('Password>'))
+                                args.append(input('FirstName>'))
+                                args.append(input('LastName>'))
+                                args.append(input('Email>'))
+                                args.append(input('PhoneNumber>'))
+                                args.append(input('MelliCode>'))
 
                             functions.signUp(logger, cursor, *args)
                         elif com.lower() == 'signin':
                             if len(args) != 3:
                                 args = list()
                                 args.append('-u')
-                                args.append(input('Username> '))
-                                args.append(input('Password> '))
+                                args.append(input('Username>'))
+                                args.append(input('Password>'))
                             if functions.signIn(logger, cursor, *args):
                                 username = args[1]
                                 password = args[2]
@@ -236,14 +236,14 @@ if __name__ == '__main__':
                                                             continue
                                                         if com.lower() in ('q', 'quit'):
                                                             break
-                                                        elif com.lower() == 'show':
+                                                        elif com.lower() in ('all','show'):
                                                             functions.showPlaylists(logger, cursor, username)
                                                         elif com.lower() == 'create':
-                                                            playlist_name = input('Playlist Name>>>> ')
+                                                            playlist_name = input('Playlist Name>>>>')
                                                             playlist_description = ''
                                                             while True:
                                                                 inp = input(
-                                                                    'Playlist Description(Type exit to stop)>>>> ')
+                                                                    'Playlist Description(Type exit to stop)>>>>')
                                                                 if inp == 'exit':
                                                                     break
                                                                 playlist_description = playlist_description + " " + inp
@@ -253,14 +253,14 @@ if __name__ == '__main__':
                                                         elif com.lower() in ('add', 'addto', 'add_to'):
                                                             if len(args) == 0:
                                                                 args = list()
-                                                                args.append(input('Playlist To Add Number>>>> '))
+                                                                args.append(input('Playlist To Add Number>>>>'))
                                                             if len(args) == 1:
                                                                 move_next = functions.showFilms(logger, cursor, 0, 10)
+                                                                current_position = 0
                                                                 while True:
-                                                                    current_position = 0
                                                                     print('Enter the film\'s number.')
                                                                     print('Or enter next, prev to see other films')
-                                                                    com = input('>>>>> ')
+                                                                    com = input('>>>>>')
                                                                     if com.lower() == 'next':
                                                                         if move_next:
                                                                             current_position += 10
@@ -291,7 +291,7 @@ if __name__ == '__main__':
                                                 elif com.lower() in ('watch', 'select', 'choose'):
                                                     if len(args) == 0:
                                                         args = list()
-                                                        args.append(input('Playlist Number>>> '))
+                                                        args.append(input('Playlist Number>>>'))
                                                     if len(args) == 1:
                                                         move_next = functions.showPlaylistFilms(logger, cursor, args[0],
                                                                                                 0, 10)
@@ -299,8 +299,10 @@ if __name__ == '__main__':
                                                         while True:
                                                             print('Enter the film\'s number.')
                                                             print('Or enter next, prev to see other films')
-                                                            com = input('>>>> ')
-                                                            if com.lower() == 'next':
+                                                            com = input('>>>>')
+                                                            if com.lower() in ('q', 'quit'):
+                                                                break
+                                                            elif com.lower() == 'next':
                                                                 if move_next:
                                                                     current_position += 10
                                                                     move_next = functions.showPlaylistFilms(logger,
@@ -321,120 +323,14 @@ if __name__ == '__main__':
                                                             else:
                                                                 args.append(com)
                                                                 break
-
-                                                    film_id = args[1]
-                                                    is_vip = functions.isVip(logger,cursor,film_id)
-                                                    functions.filmInfo(logger, cursor, film_id)
-                                                    if is_vip:
-                                                        print('This film is VIP.')
-                                                        print(
-                                                            'If you haven\'t bought this before, Enter \'buy\' to purchase the film. else enter \'no\'.')
-                                                        com = input('>>> ')
-                                                        if com.lower() in ('yes', 'buy'):
-                                                            functions.buyVipFilm(logger, cursor, username, film_id)
-
-                                                    watch_res = functions.watchFilm(logger, cursor, username, film_id)
-                                                    if watch_res:
-                                                        while True:
-                                                            print('Film ' + film_id + ' is now playing.')
-                                                            print('Enter \'finish\' to finish watching it.')
-                                                            print('Enter \'later\' to watch it later.')
-                                                            com = input('>>>> ')
-                                                            if com == 'finish':
-                                                                functions.finishWatching(logger, cursor, username,
-                                                                                         film_id)
-                                                                break
-                                                            elif com == 'later':
-                                                                break
+                                                    if len(args) == 2:
+                                                        functions.filmPanel(logger, cursor, username, args[1])
 
                                         elif com.lower() in ('watch', 'show', 'film'):
-                                            move_next = functions.showFilms(logger, cursor, 0, 10)
-                                            current_position = 0
-                                            while True:
-                                                print('Enter the film\'s number.')
-                                                print('Or enter next, prev to see other films')
-                                                com = input('>>> ')
-                                                if com.lower() == 'next':
-                                                    if move_next:
-                                                        current_position += 10
-                                                        move_next = functions.showFilms(logger, cursor,
-                                                                                        current_position, 10)
-                                                    else:
-                                                        continue
-                                                elif com.lower() == 'prev':
-                                                    if current_position - 10 >= 0:
-                                                        current_position -= 10
-                                                        functions.showFilms(logger, cursor, current_position, 10)
-                                                        move_next = True
-                                                    else:
-                                                        continue
-                                                else:
-                                                    args.append(com)
-                                                    break
-                                            film_id = args[0]
-                                            is_vip = functions.isVip(logger, cursor, film_id)
-                                            print('The following film is selected:')
-                                            functions.filmInfo(logger, cursor, film_id)
-                                            print('You are now in Film panel')
-                                            while True:
-                                                com = input('>>>>')
-                                                if com.lower() in ('q', 'quit','play'):
-                                                    break
-                                                elif com.lower() == 'info':
-                                                    functions.filmInfo(logger, cursor, film_id)
-                                                elif com.lower() in ('comment', 'comments'):
-                                                    current_position = 0
-                                                    move_next = functions.showComments(logger, cursor,film_id, current_position,5)
-                                                    while True:
-                                                        command = input('>>>>>')
-                                                        if command.lower() in ('q', 'quit'):
-                                                            break
-                                                        elif command.lower() in ('add', 'new', 'comment'):
-                                                            comment_text = ''
-                                                            while True:
-                                                                inp = input(
-                                                                    'Your comment(Type exit to stop)>>>>>')
-                                                                if inp == 'exit':
-                                                                    break
-                                                                comment_text = comment_text + " " + inp
-                                                            rate = input('Your rate(0 to 5)>>>>>')
-                                                            functions.addNewComment(logger, cursor, username,film_id, comment_text, rate)
-                                                        elif command.lower() == 'next':
-                                                            if move_next:
-                                                                current_position += 5
-                                                                move_next = functions.showComments(logger, cursor, film_id, current_position, 5)
-                                                            else:
-                                                                continue
-                                                        elif command.lower() == 'prev':
-                                                            if current_position - 5 >= 0:
-                                                                current_position -= 5
-                                                                functions.showComments(logger, cursor, film_id, current_position, 5)
-                                                                move_next = True
-                                                            else:
-                                                                continue
+                                            film_id = functions.chooseFilm(logger, cursor)
+                                            if film_id != -1:
+                                                functions.filmPanel(logger, cursor, username, film_id)
 
-                                            if is_vip:
-                                                has_bought = functions.checkIfBought(logger, cursor, username, film_id)
-                                                if not has_bought:
-                                                    print('This film is VIP.')
-                                                    print(
-                                                        'You haven\'t bought this before, Enter \'buy\' to purchase the film. else enter \'no\'.')
-                                                    com = input('>>>>')
-                                                    if com.lower() in ('yes', 'buy'):
-                                                        functions.buyVipFilm(logger, cursor, username, film_id)
-
-                                            watch_res = functions.watchFilm(logger, cursor, username, film_id)
-                                            if watch_res:
-                                                while True:
-                                                    print('Film ' + film_id + ' is now playing.')
-                                                    print('Enter \'finish\' to finish watching it.')
-                                                    print('Enter \'later\' to watch it later.')
-                                                    com = input('>>>>')
-                                                    if com == 'finish':
-                                                        functions.finishWatching(logger, cursor, username, film_id)
-                                                        break
-                                                    elif com == 'later':
-                                                        break
                         else:
                             print('Invalid Command.\nNeed help? Enter \'help\' command')
 

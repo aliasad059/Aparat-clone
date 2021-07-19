@@ -219,6 +219,26 @@ def showFilms(logger, cursor, start_bound, number_of_films):
         logger.error(f'[ShowFilms] {e.msg}')
 
 
+def searchForFilm(logger, cursor, search_term, sort_term, start_bound, number_of_films):
+    try:
+        cursor.callproc('SearchForFilm', args=(search_term, sort_term, start_bound, number_of_films,))
+        table = PrettyTable(['id', 'name', 'release_date',
+                             'price', 'details', 'viewers',
+                             'average rate', 'all rates'])
+        rowcount = 0
+        for res in cursor.stored_results():
+            data = res.fetchall()
+            rowcount = len(data)
+            for i in data:
+                table.add_row(i)
+        print(table)
+        if rowcount < number_of_films:
+            return False
+        return True
+    except Error as e:
+        logger.error(f'[SearchForFilm] {e.msg}')
+
+
 def watchFilm(logger, cursor, viewer_username, film_id):
     try:
         cursor.callproc('WatchFilm', args=(viewer_username, film_id,))
@@ -253,9 +273,9 @@ def checkIfBought(logger, cursor, buyer_username, film_id):
         return False
 
 
-def addNewComment(logger, cursor, username,film_id, comment, rate):
+def addNewComment(logger, cursor, username, film_id, comment, rate):
     try:
-        cursor.callproc('AddNewComments', args=(username,film_id, comment, rate,))
+        cursor.callproc('AddNewComments', args=(username, film_id, comment, rate,))
     except Error as e:
         logger.error(f'[AddNewComments] {e.msg}')
 
@@ -293,6 +313,13 @@ def filmInfo(logger, cursor, film_id_param):
         cursor.execute(operation, {'film_id_param': film_id_param})
         table = from_db_cursor(cursor)
         print(table)
+
+    except Error as e:
+        logger.error(f'[FilmInfo] {e.msg}')
+
+
+def filmTags(logger, cursor, film_id_param):
+    try:
         print('Tags:')
         operation = "SELECT film_tag.tag_name FROM film_tag WHERE film_tag.film_id = %(film_id_param)s"
         cursor.execute(operation, {'film_id_param': film_id_param})
@@ -300,8 +327,149 @@ def filmInfo(logger, cursor, film_id_param):
         print(table)
 
     except Error as e:
-        logger.error(f'[FilmInfo] {e.msg}')
+        logger.error(f'[FilmTags] {e.msg}')
 
-# TODO: comment panel
+
+def filmCreators(logger, cursor, film_id_param):
+    try:
+        print('Creators:')
+        operation = "SELECT * FROM film_creator WHERE film_creator.film_id = %(film_id_param)s"
+        cursor.execute(operation, {'film_id_param': film_id_param})
+        table = from_db_cursor(cursor)
+        print(table)
+
+    except Error as e:
+        logger.error(f'[FilmCreators] {e.msg}')
+
+
+def filmPanel(logger, cursor, username, film_id):
+    is_vip = isVip(logger, cursor, film_id)
+    print('The following film is selected:')
+    filmInfo(logger, cursor, film_id)
+    print('You are now in Film panel')
+    while True:
+        com = input('>>>>')
+        if com.lower() in ('q', 'quit'):
+            break
+        elif com.lower() in ('h', 'help'):
+            print('film panel help')
+        elif com.lower() in ('info', 'about'):
+            filmInfo(logger, cursor, film_id)
+        elif com.lower() in ('creator', 'creators'):
+            filmCreators(logger, cursor, film_id)
+        elif com.lower() in ('tag', 'tags'):
+            filmTags(logger, cursor, film_id)
+        elif com.lower() in ('play', 'watch', 'start'):
+            if is_vip:
+                has_bought = checkIfBought(logger, cursor, username, film_id)
+                if not has_bought:
+                    print('Enter \'buy\' to purchase the film. else enter \'no\'.')
+                    com = input('>>>>')
+                    if com.lower() in ('yes', 'buy'):
+                        buyVipFilm(logger, cursor, username, film_id)
+
+            watch_res = watchFilm(logger, cursor, username, film_id)
+            if watch_res:
+                while True:
+                    print('Film ' + film_id + ' is now playing.')
+                    print('Enter \'finish\' to finish watching it.')
+                    print('Enter \'later\' to watch it later.')
+                    com = input('>>>>')
+                    if com == 'finish':
+                        finishWatching(logger, cursor, username, film_id)
+                        break
+                    elif com == 'later':
+                        break
+
+        elif com.lower() in ('comment', 'comments'):
+            current_position = 0
+            move_next = showComments(logger, cursor, film_id, current_position, 5)
+            while True:
+                command = input('>>>>>')
+                if command.lower() in ('q', 'quit'):
+                    break
+                elif command.lower() in ('add', 'new', 'comment'):
+                    comment_text = ''
+                    while True:
+                        inp = input('Your comment(Type exit to stop)>>>>>')
+                        if inp == 'exit':
+                            break
+                        comment_text = comment_text + " " + inp
+                    rate = input('Your rate(0 to 5)>>>>>')
+                    addNewComment(logger, cursor, username, film_id, comment_text, rate)
+                elif command.lower() == 'next':
+                    if move_next:
+                        current_position += 5
+                        move_next = showComments(logger, cursor, film_id, current_position, 5)
+                    else:
+                        continue
+                elif command.lower() == 'prev':
+                    if current_position - 5 >= 0:
+                        current_position -= 5
+                        showComments(logger, cursor, film_id, current_position, 5)
+                        move_next = True
+                    else:
+                        continue
+
+
+def chooseFilm(logger, cursor):
+    print('In choose Film Panel:')
+    while True:
+        command = input('>>>')
+        if command.lower() in ('q', 'quit'):
+            return -1
+        elif command.lower() in ('h', 'help'):
+            print('choose film panel help')
+        elif command.lower() in ('filter', 'search'):
+            search_term = input('Search Term>>>')
+            sort_term = input('Sort Term(rate,viewers,film name)>>>')
+            move_next = searchForFilm(logger, cursor, search_term, sort_term, 0, 10)
+            current_position = 0
+            while True:
+                print('Enter the film\'s number.')
+                print('Or enter next, prev to see other films.')
+                com = input('>>>>')
+                if com.lower() in ('q', 'quit'):
+                    break
+                elif com.lower() == 'next':
+                    if move_next:
+                        current_position += 10
+                        move_next = searchForFilm(logger, cursor, search_term, sort_term, current_position, 10)
+                    else:
+                        continue
+                elif com.lower() == 'prev':
+                    if current_position - 10 >= 0:
+                        current_position -= 10
+                        searchForFilm(logger, cursor, search_term, sort_term, current_position, 10)
+                        move_next = True
+                    else:
+                        continue
+                else:
+                    return com
+        elif command.lower() == 'all':
+            move_next = showFilms(logger, cursor, 0, 10)
+            current_position = 0
+            while True:
+                print('Enter the film\'s number.')
+                print('Or enter next, prev to see other films')
+                com = input('>>>>')
+                if com.lower() in ('q', 'quit'):
+                    break
+                elif com.lower() == 'next':
+                    if move_next:
+                        current_position += 10
+                        move_next = showFilms(logger, cursor,
+                                              current_position, 10)
+                    else:
+                        continue
+                elif com.lower() == 'prev':
+                    if current_position - 10 >= 0:
+                        current_position -= 10
+                        showFilms(logger, cursor, current_position, 10)
+                        move_next = True
+                    else:
+                        continue
+                else:
+                    return com
+
 # TODO: admin panel
-# TODO: SearchForFilm: admin panel

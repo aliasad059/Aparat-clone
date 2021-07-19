@@ -41,14 +41,8 @@ create table film
 create_table_category = """
 create table category
 (
+    
     name varchar(50) primary key 
-);
-"""
-
-create_table_tag = """
-create table tag
-(
-    tag_value varchar(50) primary key 
 );
 """
 
@@ -58,8 +52,8 @@ create table film_category
     film_id       int,
     category_name   varchar(50),
     primary key (film_id,category_name),
-    foreign key (film_id) references film (id),
-    foreign key (category_name) references category (name)
+    foreign key (film_id) references film (id) on delete cascade ,
+    foreign key (category_name) references category (name) on delete cascade 
 );
 """
 
@@ -88,7 +82,8 @@ create table watch_film
 (
     film_id         int ,
     viewer_username varchar(50),
-    has_finished    bool default false
+    has_finished    bool default false,
+    foreign key (film_id) references film (id) on delete cascade
 );
 """
 
@@ -111,7 +106,7 @@ create table film_comment
     comment         varchar(200) NULL,
     rate            int NOT NULL,
     check ( rate >= 0 and rate <= 5),
-    foreign key (film_id) references film (id),
+    foreign key (film_id) references film (id) on delete cascade ,
     foreign key (viewer_username) references user (username)
 );
 """
@@ -134,7 +129,7 @@ create table playlist_film
     film_id     int,
     primary key (playlist_id, film_id),
     foreign key (playlist_id) references playlist (id),
-    foreign key (film_id) references film (id)
+    foreign key (film_id) references film (id) on delete cascade 
 );
 """
 
@@ -172,6 +167,6 @@ create table buy_vip_film
     film_id        int,
     primary key (buyer_username, film_id),
     foreign key (buyer_username) references user (username),
-    foreign key (film_id) references film (id)
+    foreign key (film_id) references film (id) on delete cascade 
 );
 """

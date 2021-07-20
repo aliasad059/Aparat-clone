@@ -211,4 +211,22 @@ BEGIN
     VALUES (NEW.viewer_username, 'FINISHED WATCHING FILM', concat(NEW.viewer_username, ' has finished watching film ', NEW.film_id));
 END;
 
+CREATE TRIGGER FollowLog
+    AFTER INSERT
+    ON friend
+    FOR EACH ROW
+BEGIN
+    INSERT INTO log (username, activity_type, activity_description)
+    VALUES (NEW.username, 'FOLLOWS', concat(NEW.username, ' started following ', NEW.friend_username));
+END;
+
+CREATE TRIGGER UnfollowLog
+    AFTER DELETE
+    ON friend
+    FOR EACH ROW
+BEGIN
+    INSERT INTO log (username, activity_type, activity_description)
+    VALUES (OLD.username, 'UNFOLLOWS', concat(OLD.username, ' unfollows ', OLD.friend_username));
+END;
+
 """

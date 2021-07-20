@@ -624,4 +624,43 @@ def showCategoryFilms(logger, cursor, category_id_param, start_bound, number_of_
     except Error as e:
         logger.error(f'[ShowCategoryFilms] {e.msg}')
 
-# TODO: search in category in userpanel
+
+def follow(logger, cursor, username, friend_username):
+    try:
+        cursor.callproc('Follow', args=(username, friend_username))
+
+    except Error as e:
+        if e.errno == 1062:
+            logger.error('[Follow] ' + 'you have followed ' + friend_username + ' before.')
+        elif e.errno == 1452:
+            logger.error('[Follow] ' + 'friend\'s username not found.')
+        else:
+            logger.error(f'[Follow] {e.msg}')
+
+
+def unfollow(logger, cursor, username, friend_username):
+    try:
+        cursor.callproc('Unfollow', args=(username, friend_username))
+
+    except Error as e:
+        logger.error(f'[Unfollow] {e.msg}')
+
+
+def showMyFollowings(logger, cursor, username_param):
+    try:
+        operation = "SELECT friend.friend_username FROM friend WHERE friend.username = %(username_param)s"
+        cursor.execute(operation, {'username_param': username_param})
+        friends_table = from_db_cursor(cursor)
+        print(friends_table)
+    except Error as e:
+        logger.error(f'[MyFollowings] {e.msg}')
+
+
+def showMyFollowers(logger, cursor, username_param):
+    try:
+        operation = "SELECT friend.username FROM friend WHERE friend.friend_username = %(username_param)s"
+        cursor.execute(operation, {'username_param': username_param})
+        friends_table = from_db_cursor(cursor)
+        print(friends_table)
+    except Error as e:
+        logger.error(f'[MyFollowers] {e.msg}')

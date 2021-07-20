@@ -52,8 +52,7 @@ if __name__ == '__main__':
                     logger.info('Connected successfully.')
                     print("Welcome to Aparat.")
 
-                    in_main_panel = True
-                    while in_main_panel:
+                    while True:
                         command = input('>')
                         try:
                             com, *args = command.split()
@@ -62,8 +61,7 @@ if __name__ == '__main__':
                         if com.lower() in ('q', 'quit'):
                             logger.info('Shutting down program.')
                             print('Have a Good day, dude. :)\nRemember us.\nAparat')
-                            in_main_panel = False
-                            continue
+                            break
                         elif com.lower() in ('h', 'help'):
                             print('help command in main panel')
                         elif com.lower() == 'signup':
@@ -363,7 +361,8 @@ if __name__ == '__main__':
 
                                                             functions.addFilmTo(logger, cursor, username, args[0],
                                                                                 args[1])
-
+                                                elif com.lower in ('friend', 'friends', 'social'):
+                                                    print('my friends')
                                                 elif com.lower() in ('all', 'show'):
                                                     functions.showPlaylists(logger, cursor, None)
 
@@ -443,11 +442,40 @@ if __name__ == '__main__':
                                             if len(args) == 2:
                                                 functions.filmPanel(logger, cursor, username, args[1])
 
-
                                         elif com.lower() in ('watch', 'show', 'film'):
                                             film_id = functions.chooseFilm(logger, cursor)
                                             if film_id != -1:
                                                 functions.filmPanel(logger, cursor, username, film_id)
+
+                                        elif com.lower() in ('social', 'friend'):
+                                            while True:
+                                                command = input('>>>')
+                                                try:
+                                                    com, *args = command.split()
+                                                except ValueError:
+                                                    continue
+
+                                                if com.lower() in ('q', 'quit'):
+                                                    break
+
+                                                elif com.lower() in ('h', 'help'):
+                                                    print('social help')
+                                                elif com.lower() in ('follow', 'new', 'add'):
+                                                    if len(args) == 0:
+                                                        args = list()
+                                                        args.append(input('Friend Username>>>'))
+                                                    functions.follow(logger, cursor, username, args[0])
+                                                elif com.lower() in ('unfollow', 'remove'):
+                                                    if len(args) == 0:
+                                                        args = list()
+                                                        args.append(input('Friend Username>>>'))
+                                                    functions.unfollow(logger, cursor, username, args[0])
+                                                elif com.lower() in (
+                                                        'my', 'myfriends', 'my_friends', 'friends', 'friend',
+                                                        'followings', 'following'):
+                                                    functions.showMyFollowings(logger, cursor, username)
+                                                elif com.lower() in ('follower', 'followers'):
+                                                    functions.showMyFollowers(logger, cursor, username)
 
                         else:
                             print('Invalid Command.\nNeed help? Enter \'help\' command')

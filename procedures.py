@@ -660,7 +660,7 @@ BEGIN
 END;
 """
 
-create_divide_rows_function = """
+create_show_film_list_procedures = """
 CREATE PROCEDURE ShowFilms(
     start_bound int,
     numberOfFilms int)
@@ -683,6 +683,31 @@ BEGIN
           )
     LIMIT start_bound,numberOfFilms;
 END;
-
-
 """
+
+creator_social_procedures = """
+CREATE PROCEDURE Follow(
+    username_param varchar(50),
+    friend_username_param varchar(50)
+)
+BEGIN
+    insert into friend (username, friend_username)
+    values (username_param, friend_username_param);
+END;
+
+CREATE PROCEDURE Unfollow(
+    username_param varchar(50),
+    friend_username_param varchar(50)
+)
+BEGIN
+    if (username_param, friend_username_param) not in (
+        select *
+        from friend
+    ) then
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You have not followed this user before.', MYSQL_ERRNO = 9020;
+    end if;
+    DELETE FROM friend WHERE friend.friend_username = friend_username_param and friend.username = username_param;
+END;
+"""
+

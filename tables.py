@@ -133,14 +133,14 @@ create table playlist_film
 );
 """
 
-create_table_follow_user = """
-create table follow_user
+create_table_friend = """
+create table friend
 (
-    follower_username  varchar(50),
-    following_username varchar(50),
-    primary key (follower_username, following_username),
-    foreign key (follower_username) references user (username),
-    foreign key (following_username) references user (username)
+    username  varchar(50),
+    friend_username varchar(50),
+    primary key (username, friend_username),
+    foreign key (username) references user (username),
+    foreign key (friend_username) references user (username)
 );
 """
 

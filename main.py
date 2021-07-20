@@ -288,7 +288,7 @@ if __name__ == '__main__':
                                                                                    'credit')
 
                                         elif com.lower() in ('playlist', 'list'):
-                                            functions.printHeader('In playlist:')
+                                            functions.printHeader('In playlist')
                                             while True:
                                                 command = input('>>>')
                                                 try:
@@ -361,8 +361,8 @@ if __name__ == '__main__':
 
                                                             functions.addFilmTo(logger, cursor, username, args[0],
                                                                                 args[1])
-                                                elif com.lower in ('friend', 'friends', 'social'):
-                                                    print('my friends')
+                                                elif com.lower() in ('followings','following','friend', 'friends', 'social'):
+                                                    functions.showMyFriendsPlaylist(logger,cursor,username)
                                                 elif com.lower() in ('all', 'show'):
                                                     functions.showPlaylists(logger, cursor, None)
 

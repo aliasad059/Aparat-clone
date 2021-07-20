@@ -664,3 +664,16 @@ def showMyFollowers(logger, cursor, username_param):
         print(friends_table)
     except Error as e:
         logger.error(f'[MyFollowers] {e.msg}')
+
+
+def showMyFriendsPlaylist(logger, cursor, username_param):
+    try:
+        cursor.callproc('MyFriendPlaylist', args=(username_param,))
+        table = PrettyTable(['id', 'name', 'description', 'creator'])
+        for res in cursor.stored_results():
+            data = res.fetchall()
+            for i in data:
+                table.add_row(i)
+        print(table)
+    except Error as e:
+        logger.error(f'[MyFriendPlaylist] {e.msg}')

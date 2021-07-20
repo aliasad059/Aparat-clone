@@ -709,5 +709,18 @@ BEGIN
     end if;
     DELETE FROM friend WHERE friend.friend_username = friend_username_param and friend.username = username_param;
 END;
+CREATE PROCEDURE MyFriendPlaylist(
+    username_param varchar(50)
+)
+BEGIN
+    select *
+    from playlist
+    where playlist.creator_username in
+          (
+              select friend.friend_username
+              from friend
+              where friend.username = username_param
+          );
+END;
 """
 

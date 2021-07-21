@@ -19,7 +19,7 @@ INSERT INTO Aparat.my_errors (err_number, err_description) VALUES (9016, 'You ha
 INSERT INTO Aparat.my_errors (err_number, err_description) VALUES (9017, 'You both have got your points before.');
 INSERT INTO Aparat.my_errors (err_number, err_description) VALUES (9018, 'You do not have access to add new films to this playlist.');
 INSERT INTO Aparat.my_errors (err_number, err_description) VALUES (9019, 'This film is free.');
-INSERT INTO Aparat.my_errors (err_number, err_description) VALUES (9020, 'You have not followed this user before.');        """
+INSERT INTO Aparat.my_errors (err_number, err_description) VALUES (9020, 'You have not followed this user before.');
 INSERT INTO Aparat.film (id, name, release_date, price, details, viewers, rate_avg, rates) VALUES (1, 'James Bond', '1961-10-19', 0, 'Bond is a British secret agent working for MI6 and answers to his codename, 007.', 0, 0, 0);
 INSERT INTO Aparat.film (id, name, release_date, price, details, viewers, rate_avg, rates) VALUES (2, 'The Killer', '1998-07-06', 0, 'Hitman Ah Jong is on his last job for the Hong Kong Triad, but accidentally damages the eyes of a young nightclub singer named Jennie with muzzle flash in a shootout. After the attack...', 0, 0, 0);
 INSERT INTO Aparat.film (id, name, release_date, price, details, viewers, rate_avg, rates) VALUES (3, 'Mission Impossible', '1996-01-01', 0, 'The series is mainly produced by and stars Tom Cruise, whose character is Ethan Hunt, an agent of the Impossible Missions Force (IMF).', 0, 0, 0);

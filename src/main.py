@@ -1,9 +1,6 @@
-import getpass
-
 from mysql.connector import connect, Error
-from prettytable import PrettyTable
 import logging
-
+import init
 import functions
 
 
@@ -50,6 +47,12 @@ if __name__ == '__main__':
             try:
                 with connection.cursor() as cursor:
                     logger.info('Connected successfully.')
+                    init.createTables(logger, cursor)
+                    need_init = init.createProcedures(logger, cursor)
+                    init.createTriggers(logger, cursor)
+                    # if need_init:
+                    #     init.initTables(logger, cursor)
+                    #     logger.info('Database initializations succeed.')
                     print("Welcome to Aparat.")
 
                     while True:
@@ -361,8 +364,9 @@ if __name__ == '__main__':
 
                                                             functions.addFilmTo(logger, cursor, username, args[0],
                                                                                 args[1])
-                                                elif com.lower() in ('followings','following','friend', 'friends', 'social'):
-                                                    functions.showMyFriendsPlaylist(logger,cursor,username)
+                                                elif com.lower() in (
+                                                        'followings', 'following', 'friend', 'friends', 'social'):
+                                                    functions.showMyFriendsPlaylist(logger, cursor, username)
                                                 elif com.lower() in ('all', 'show'):
                                                     functions.showPlaylists(logger, cursor, None)
 

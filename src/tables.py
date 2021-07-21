@@ -1,7 +1,7 @@
 # tables of database
 
 create_table_admin = """
-create table admin
+CREATE TABLE IF NOT EXISTS admin
 (
     username varchar(50) primary key,
     password varchar(50) not null
@@ -9,7 +9,7 @@ create table admin
 """
 
 create_table_user = """
-create table user
+CREATE TABLE IF NOT EXISTS user
 (
     username                       varchar(50) primary key,
     password                       varchar(50) not null,
@@ -25,7 +25,7 @@ create table user
 """
 
 create_table_film = """
-create table film
+CREATE TABLE IF NOT EXISTS film
 (
     id           int auto_increment primary key,
     name         varchar(50),
@@ -39,7 +39,7 @@ create table film
 """
 
 create_table_category = """
-create table category
+CREATE TABLE IF NOT EXISTS category
 (
     id int auto_increment primary key,
     name varchar(50)
@@ -47,7 +47,7 @@ create table category
 """
 
 create_table_film_category = """
-create table film_category
+CREATE TABLE IF NOT EXISTS film_category
 (
     film_id       int,
     category_id   int,
@@ -58,7 +58,7 @@ create table film_category
 """
 
 create_table_film_tag = """
-create table film_tag
+CREATE TABLE IF NOT EXISTS film_tag
 (
     film_id       int,
     tag_name   varchar(50),
@@ -67,7 +67,7 @@ create table film_tag
 """
 
 create_table_film_creator = """
-create table film_creator
+CREATE TABLE IF NOT EXISTS film_creator
 (
     film_id           int ,
     creator_firstname varchar(50),
@@ -78,7 +78,7 @@ create table film_creator
 """
 
 create_table_watch_film = """
-create table watch_film
+CREATE TABLE IF NOT EXISTS watch_film
 (
     film_id         int ,
     viewer_username varchar(50),
@@ -88,7 +88,7 @@ create table watch_film
 """
 
 create_table_invite_user = """
-create table invite_user
+CREATE TABLE IF NOT EXISTS invite_user
 (
     inviter_username varchar(50),
     invited_username varchar(50),
@@ -99,7 +99,7 @@ create table invite_user
 """
 
 create_table_film_comment = """
-create table film_comment
+CREATE TABLE IF NOT EXISTS film_comment
 (
     film_id         int,
     viewer_username varchar(50),
@@ -112,7 +112,7 @@ create table film_comment
 """
 
 create_table_playlist = """
-create table playlist
+CREATE TABLE IF NOT EXISTS playlist
 (
     id               int auto_increment primary key,
     name             varchar(50),
@@ -123,7 +123,7 @@ create table playlist
 """
 
 create_table_playlist_film = """
-create table playlist_film
+CREATE TABLE IF NOT EXISTS playlist_film
 (
     playlist_id int,
     film_id     int,
@@ -134,7 +134,7 @@ create table playlist_film
 """
 
 create_table_friend = """
-create table friend
+CREATE TABLE IF NOT EXISTS friend
 (
     username  varchar(50),
     friend_username varchar(50),
@@ -145,7 +145,7 @@ create table friend
 """
 
 create_table_log = """
-create table log
+CREATE TABLE IF NOT EXISTS log
 (
     username             varchar(50),
     activity_type        varchar(50),
@@ -155,13 +155,13 @@ create table log
 """
 
 create_table_mysqlErrors = """
-create table my_errors(
-    err_number int auto_increment,
+CREATE TABLE IF NOT EXISTS my_errors(
+    err_number int auto_increment primary key ,
     err_description varchar(200)
 );
 """
 create_table_buy_vip_film = """
-create table buy_vip_film
+CREATE TABLE IF NOT EXISTS buy_vip_film
 (
     buyer_username varchar(50),
     film_id        int,
@@ -170,3 +170,25 @@ create table buy_vip_film
     foreign key (film_id) references film (id) on delete cascade 
 );
 """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

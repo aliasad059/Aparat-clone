@@ -119,7 +119,7 @@ BEGIN
 END;
 """
 
-create_edit_personal_info_procedures = """
+create_change_password_procedure = """
 CREATE PROCEDURE ChangePassword(
     username_param varchar(50),
     new_password varchar(50)
@@ -138,7 +138,9 @@ BEGIN
     set user.password = new_password
     where user.username = username_param;
 END;
+"""
 
+create_change_firstname_procedure = """
 CREATE PROCEDURE ChangeFirstName(
     username_param varchar(50),
     new_firstname varchar(50)
@@ -148,7 +150,9 @@ BEGIN
     set user.first_name = new_firstname
     where user.username = username_param;
 END;
+"""
 
+create_change_lastname_procedure = """
 CREATE PROCEDURE ChangeLastName(
     username_param varchar(50),
     new_lastname varchar(50)
@@ -158,7 +162,9 @@ BEGIN
     set user.last_name = new_lastname
     where user.username = username_param;
 END;
+"""
 
+create_change_email_procedure = """
 CREATE PROCEDURE ChangeEmail(
     username_param varchar(50),
     new_email varchar(50)
@@ -177,7 +183,9 @@ BEGIN
     set user.email = new_email
     where user.username = username_param;
 END;
+"""
 
+create_change_phonenumber_procedure = """
 CREATE PROCEDURE ChangePhoneNumber(
     username_param varchar(50),
     new_phoneNumber varchar(50)
@@ -200,7 +208,9 @@ BEGIN
     set user.phone_number = new_phoneNumber
     where user.username = username_param;
 END;
+"""
 
+create_change_mellicode_procedure = """
 CREATE PROCEDURE ChangeMelliCode(
     username_param varchar(50),
     new_melli_code varchar(50)
@@ -225,13 +235,15 @@ BEGIN
 END;
 """
 
-create_increase_balance_procedure = """
+create_getbalance_procedure = """
 
 CREATE PROCEDURE GetBalance(username_param varchar(50))
 BEGIN
     select user.balance from user where user.username = username_param;
 END;
+"""
 
+create_increase_balance_procedure = """
 CREATE PROCEDURE IncreaseBalance(
     username_param varchar(50),
     amount int
@@ -248,7 +260,7 @@ BEGIN
 END;
 """
 
-create_vip_membership_procedures = """
+create_update_vip_membership_status_procedure = """
 CREATE PROCEDURE Update_Membership_Status(
     username_param varchar(50)
 )
@@ -258,7 +270,9 @@ BEGIN
                                                  user.vip_membership_expiration_date)
     where user.username = username_param;
 END;
+"""
 
+create_buy_vip_membership_procedure = """
 CREATE PROCEDURE BuyVipMembership(
     username_param varchar(50),
     vip_membership_price int,
@@ -312,7 +326,9 @@ BEGIN
     end if;
 
 END;
+"""
 
+create_buy_vip_film_procedure = """
 CREATE PROCEDURE BuyVipFilm(
     username_param varchar(50),
     film_id_param int,
@@ -470,7 +486,7 @@ BEGIN
 END;
 """
 
-create_watch_film_procedures = """
+create_is_vip_procedure = """
 CREATE PROCEDURE IsVIP(
 film_id_param int
 )
@@ -480,7 +496,9 @@ BEGIN
             SET MESSAGE_TEXT = 'This film is free.', MYSQL_ERRNO = 9019;
     end if;
 END;
+"""
 
+create_check_if_bought_procedure = """
 CREATE PROCEDURE CheckIfBought(
     buyer_username_param varchar(50),
     film_id_param int)
@@ -494,7 +512,9 @@ BEGIN
             SET MESSAGE_TEXT = 'You have not bought this film before.', MYSQL_ERRNO = 9013;
     end if;
 END;
+"""
 
+create_watch_film_procedure = """
 CREATE PROCEDURE WatchFilm(
     username_param varchar(50),
     film_id_param int
@@ -522,7 +542,9 @@ BEGIN
     values (film_id_param, username_param);
 
 END;
+"""
 
+create_finish_watching_procedure = """
 CREATE PROCEDURE FinishWatching(
     username_param varchar(50),
     film_id_param varchar(50)
@@ -535,7 +557,7 @@ BEGIN
 END;
 """
 
-create_comment_procedures = """
+create_show_comment_procedure = """
 CREATE PROCEDURE ShowComments(
     film_id_param int,
     start_bound int,
@@ -547,7 +569,9 @@ BEGIN
     WHERE film_comment.film_id = film_id_param
     LIMIT start_bound,numberOfFilms;
 END;
+"""
 
+create_add_comment_procedure = """
 CREATE PROCEDURE AddNewComments(
     viewer_username_param varchar(50),
     film_id_param int,
@@ -610,7 +634,7 @@ BEGIN
 END;
 """
 
-create_playlist_procedures = """
+create_playlist_procedure = """
 CREATE PROCEDURE CreatePlaylist(
     creator_username_param varchar(50),
     playlist_name_param varchar(50),
@@ -627,7 +651,9 @@ BEGIN
 
     insert into playlist(id, creator_username, name, description) value (0, creator_username_param, playlist_name_param, description_param);
 END;
+"""
 
+create_show_playlist_procedure = """
 CREATE PROCEDURE ShowPlaylists(
     creator_username_param varchar(50)
 )
@@ -638,7 +664,9 @@ BEGIN
         select * from playlist where playlist.creator_username =creator_username_param;
     end if;
 END;
+"""
 
+create_add_filmto_playlist_procedure = """
 CREATE PROCEDURE AddNewFilmToPlaylist(
     creator_username_param varchar(50),
     playlist_id_param int,
@@ -660,7 +688,7 @@ BEGIN
 END;
 """
 
-create_show_film_list_procedures = """
+create_show_films_procedure = """
 CREATE PROCEDURE ShowFilms(
     start_bound int,
     numberOfFilms int)
@@ -669,7 +697,9 @@ BEGIN
     FROM film
     LIMIT start_bound,numberOfFilms;
 END;
+"""
 
+create_show_playlist_films_procedure = """
 CREATE PROCEDURE ShowPlaylistFilms(
     playlist_id_param int,
     start_bound int,
@@ -685,7 +715,7 @@ BEGIN
 END;
 """
 
-creator_social_procedures = """
+creator_follow_procedure = """
 CREATE PROCEDURE Follow(
     username_param varchar(50),
     friend_username_param varchar(50)
@@ -694,7 +724,9 @@ BEGIN
     insert into friend (username, friend_username)
     values (username_param, friend_username_param);
 END;
+"""
 
+creator_unfollow_procedure = """
 CREATE PROCEDURE Unfollow(
     username_param varchar(50),
     friend_username_param varchar(50)
@@ -709,6 +741,9 @@ BEGIN
     end if;
     DELETE FROM friend WHERE friend.friend_username = friend_username_param and friend.username = username_param;
 END;
+"""
+
+creator_myfriend_playlist_procedure = """
 CREATE PROCEDURE MyFriendPlaylist(
     username_param varchar(50)
 )
@@ -723,4 +758,3 @@ BEGIN
           );
 END;
 """
-

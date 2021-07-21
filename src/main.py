@@ -66,7 +66,8 @@ if __name__ == '__main__':
                             print('Have a Good day, dude. :)\nRemember us.\nAparat')
                             break
                         elif com.lower() in ('h', 'help'):
-                            print('help command in main panel')
+                            functions.printHeader('Commands In Main Panel',
+                                                  'q,quit\nh,help\nsignup\nsignin')
                         elif com.lower() == 'signup':
                             if len(args) != 7:
                                 args = list()
@@ -91,7 +92,7 @@ if __name__ == '__main__':
                                 isAdmin = False
                                 if args[0] in ('-a', '--admin'):
                                     isAdmin = True
-                                functions.printHeader('Greeting ' + username + '!\nHere is your Apart panel.')
+                                functions.printHeader('Greeting ' + username + '!', 'Here is your Apart panel.')
 
                                 if isAdmin:
                                     while True:
@@ -103,7 +104,8 @@ if __name__ == '__main__':
                                         if com.lower() in ('q', 'quit'):
                                             break
                                         elif com.lower() in ('h', 'help'):
-                                            print('help command in admin panel')
+                                            functions.printHeader('Commands In Admin Panel',
+                                                                  'q,quit\nh,help\nadd\nremove\nedit\nread\nlog\ncategory')
                                         elif com.lower() == 'add':
                                             functions.addNewFilm(logger, cursor)
                                         elif com.lower() in ('remove', 'delete'):
@@ -117,6 +119,8 @@ if __name__ == '__main__':
                                             functions.filmInfo(logger, cursor, film_id)
                                             functions.filmTags(logger, cursor, film_id)
                                             functions.filmCreators(logger, cursor, film_id)
+                                        elif com.lower() in ('log', 'logger'):
+                                            functions.log_recordes(logger, cursor)
                                         elif com.lower() == 'category':
                                             while True:
                                                 command = input('>>>')
@@ -127,7 +131,8 @@ if __name__ == '__main__':
                                                 if com.lower() in ('q', 'quit'):
                                                     break
                                                 elif com.lower() in ('h', 'help'):
-                                                    print('help command in category panel')
+                                                    functions.printHeader('Commands In Admin Panel',
+                                                                          'q,quit\nh,help\nadd,new\nall,select')
                                                 elif com.lower() in ('add', 'new', 'category'):
                                                     if len(args) == 0:
                                                         args = list()
@@ -161,6 +166,10 @@ if __name__ == '__main__':
                                                                     continue
                                                                 if com.lower() in ('q', 'quit'):
                                                                     break
+                                                                elif com.lower() in ('h', 'help'):
+                                                                    functions.printHeader(
+                                                                        'Commands In Select Category Panel',
+                                                                        'q,quit\nh,help\nnext\nprev\nadd\ndelete')
                                                                 elif com.lower() == 'next':
                                                                     if move_next:
                                                                         current_position += 10
@@ -208,7 +217,8 @@ if __name__ == '__main__':
                                         if com.lower() in ('q', 'quit'):
                                             break
                                         elif com.lower() in ('h', 'help'):
-                                            print('help command in user panel')
+                                            functions.printHeader('Commands In User Panel',
+                                                                  'q,quit\nh,help\ninfo\nedit\nwallet\ninvite\nmembership,upgrade\nplaylist\ncategory\nsocial\nwatch,film')
 
                                         elif com.lower() == 'info':
                                             functions.getInfo(logger, cursor, username)
@@ -224,7 +234,9 @@ if __name__ == '__main__':
                                                 if com.lower() in ('q', 'quit'):
                                                     break
                                                 elif com.lower() in ('h', 'help'):
-                                                    print('edit info help')
+                                                    functions.printHeader('Commands In Edit User Info Panel',
+                                                                          'q,quit\nh,help\ninfo\npassword\nlastname,last\n'
+                                                                          'firstname,first\nemail\nphone_number,phone\nmelli_code,code')
                                                 elif com.lower() == 'info':
                                                     functions.getInfo(logger, cursor, username)
                                                 elif com.lower() == 'password':
@@ -257,7 +269,8 @@ if __name__ == '__main__':
                                                 if com.lower() in ('q', 'quit'):
                                                     break
                                                 elif com.lower() in ('h', 'help'):
-                                                    print('wallet help')
+                                                    functions.printHeader('Commands In Wallet Panel',
+                                                                          'q,quit\nh,help\nstatus,balance\nincrease')
                                                 elif com.lower() in ('status', 'balance'):
                                                     functions.walletBalance(logger, cursor, username)
                                                 elif com.lower() == 'increase':
@@ -280,7 +293,8 @@ if __name__ == '__main__':
                                                 if com.lower() in ('q', 'quit'):
                                                     break
                                                 elif com.lower() in ('h', 'help'):
-                                                    print('membership help')
+                                                    functions.printHeader('Commands In VIP_Membership Panel',
+                                                                          'q,quit\nh,help\nstatus\npoints\ncredit')
                                                 elif com.lower() == 'status':
                                                     functions.showVipMembershipStatus(logger, cursor, username)
                                                 elif com.lower() in ('point', 'points'):
@@ -303,7 +317,9 @@ if __name__ == '__main__':
                                                     break
 
                                                 elif com.lower() in ('h', 'help'):
-                                                    print('playlist help')
+                                                    functions.printHeader('Commands In Playlist Panel',
+                                                                          'q,quit\nh,help\nmylist,my,myplaylist\n'
+                                                                          'following,followings\nall,show\nwatch,choose')
 
                                                 elif com.lower() in (
                                                         'my', 'myplaylist', 'myplaylists', 'mylists', 'mylist'):
@@ -384,6 +400,9 @@ if __name__ == '__main__':
                                                             com = input('>>>>')
                                                             if com.lower() in ('q', 'quit'):
                                                                 break
+                                                            elif com.lower() in ('h', 'help'):
+                                                                functions.printHeader('Commands In Film Panel',
+                                                                                      'q,quit\nh,help\nnext\nprev')
                                                             elif com.lower() == 'next':
                                                                 if move_next:
                                                                     current_position += 10
@@ -422,6 +441,9 @@ if __name__ == '__main__':
                                                     com = input('>>>>')
                                                     if com.lower() in ('q', 'quit'):
                                                         break
+                                                    elif com.lower() in ('h', 'help'):
+                                                        functions.printHeader('Commands In Film Panel',
+                                                                              'q,quit\nh,help\nnext\nprev')
                                                     elif com.lower() == 'next':
                                                         if move_next:
                                                             current_position += 10
@@ -463,7 +485,9 @@ if __name__ == '__main__':
                                                     break
 
                                                 elif com.lower() in ('h', 'help'):
-                                                    print('social help')
+                                                    functions.printHeader('Commands In Film Panel',
+                                                                          'q,quit\nh,help\nfollow\nunfollow\n'
+                                                                          'my,followings,following\nfollower,followers')
                                                 elif com.lower() in ('follow', 'new', 'add'):
                                                     if len(args) == 0:
                                                         args = list()

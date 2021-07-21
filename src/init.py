@@ -25,7 +25,7 @@ def createTables(logger, cursor):
         cursor.execute(create_table_mysqlErrors)
         return True
     except Error as e:
-        logger.error(f'[CreateTables] {e.msg}')
+        # logger.error(f'[CreateTables] {e.msg}')
         return False
 
 
@@ -67,7 +67,7 @@ def createProcedures(logger, cursor):
 
         return True
     except Error as e:
-        logger.error(f'[CreateProcedures] {e.msg}')
+        # logger.error(f'[CreateProcedures] {e.msg}')
         return False
 
 
@@ -78,7 +78,7 @@ def createTriggers(logger, cursor):
         cursor.execute(create_logger_triggers)
         return True
     except Error as e:
-        logger.error(f'[CreateTriggers] {e.msg}')
+        # logger.error(f'[CreateTriggers] {e.msg}')
         return False
 
 #

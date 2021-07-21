@@ -3,8 +3,8 @@ from mysql.connector import Error
 from prettytable import *
 
 
-def printHeader(str):
-    header = PrettyTable(['...Aparat...'])
+def printHeader(header,str):
+    header = PrettyTable([header])
     header.add_row([str])
     print(header)
 
@@ -677,3 +677,13 @@ def showMyFriendsPlaylist(logger, cursor, username_param):
         print(table)
     except Error as e:
         logger.error(f'[MyFriendPlaylist] {e.msg}')
+
+
+def log_recordes(logger, cursor):
+    try:
+        operation = "SELECT * FROM log "
+        cursor.execute(operation)
+        log_table = from_db_cursor(cursor)
+        print(log_table)
+    except Error as e:
+        logger.error(f'[Log] {e.msg}')

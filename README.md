@@ -1,13 +1,12 @@
 # Aparat-Clone
-This is my final project of Database Design course at AUT.
+This is my final project of the Database Design course at AUT.\
+Aparat-Clone is a basic version of the Iranian video-sharing service [Aparat](https://www.aparat.com/).
 
-Aparat-Clone is a basic version of Iranian video-sharing service [Aparat](https://www.aparat.com/).
-
-All the logic part of the project are written in mysql queries ( as it's my DB course :) )
+All the logic parts of the project are written in MySQL queries ( as it's my DB course :) )
 
 
 # How To Use
-You first need to create a new user in mysql as follows
+You first need to create a new user in MySQL as follows
 ```sql 
 mysql> CREATE USER 'username-you-like'@'localhost' IDENTIFIED BY 'a-strong-password';
 ```
@@ -20,7 +19,7 @@ and finally create database
 ```sql
 mysql> CREATE DATABASE IF NOT EXISTS Aparat
 ```
-before you run the main programm, you need to set your configurations you did before.
+before you run the main program, you need to set the configurations you did before.
 
 you just need to set the config.json file as:
 
@@ -46,15 +45,15 @@ python3 main.py
 ```
 # Features
 - Create an Aparat account
-- Sign-in as admin and CRUD the films, categories,and see log history of what users done 
+- Sign-in as admin and CRUD the films, categories, and see the log history of what users have done
 - Sign-in as a user
-- Watch movies, add new comment and rate 
-- Create Playlist of Aparat films and share it to others
+- Watch movies, add new comments, and rate
+- Create a Playlist of Aparat films and share it with others
 - Upgrade to VIP-Member to watch the VIP-films
 - Follow and Unfollow a friend to see his/her Playlist
 - ...
 
 # Requirements
-  - Mysql
+  - MYSQL
   - mysql-connector-python
   - prettytable

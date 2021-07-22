@@ -92,7 +92,10 @@ if __name__ == '__main__':
                                 isAdmin = False
                                 if args[0] in ('-a', '--admin'):
                                     isAdmin = True
-                                functions.printHeader('Greeting ' + username + '!', 'Here is your Apart panel.')
+                                functions.printHeader('Greeting ' + username + '!', 'Here is your Apart panel.\n'
+                                                                                    'Enter h or help to get help.\n'
+                                                                                    'Enter q or quit to return'
+                                                                                    ' to the previous level.')
 
                                 if isAdmin:
                                     while True:
@@ -259,7 +262,6 @@ if __name__ == '__main__':
                                                     functions.changeMelliCode(logger, cursor, username, new_info)
 
                                         elif com.lower() == 'wallet':  # increase balance
-                                            functions.printHeader('In your wallet:')
                                             while True:
                                                 command = input('>>>')
                                                 try:
@@ -305,7 +307,6 @@ if __name__ == '__main__':
                                                                                    'credit')
 
                                         elif com.lower() in ('playlist', 'list'):
-                                            functions.printHeader('In playlist')
                                             while True:
                                                 command = input('>>>')
                                                 try:

@@ -1,3 +1,6 @@
+import json
+import os
+
 from mysql.connector import connect, Error
 import logging
 import init
@@ -28,18 +31,15 @@ def config_logger():
     return logger
 
 
-config = {
-    'user': 'root',
-    'password': 'secret',
-    'host': '127.0.0.1',
-    'database': 'Aparat',
-    'buffered': True,
-    'autocommit': True
-}
+def setConfig(file_address: str):
+    with open(file_address) as jf:
+        return json.load(jf)
+
 
 if __name__ == '__main__':
     logger = config_logger()
     logger.info("Aparat started.")
+    config = setConfig('src/config.json')
 
     try:
         logger.info('Try to connect to the database.')

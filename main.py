@@ -1,10 +1,8 @@
 import json
-import os
-
 from mysql.connector import connect, Error
 import logging
-import init
-import functions
+from src import functions
+from src import init
 
 
 def config_logger():
@@ -227,7 +225,7 @@ if __name__ == '__main__':
                                             functions.getInfo(logger, cursor, username)
 
                                         elif com.lower() == 'edit':  # edit personal info
-                                            functions.printHeader('In edit information panel ')
+
                                             while True:
                                                 command = input('>>>')
                                                 try:

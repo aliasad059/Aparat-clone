@@ -1,8 +1,7 @@
 from mysql.connector import Error
-
-from tables import *
-from triggers import *
-from procedures import *
+from src.tables import *
+from src.procedures import *
+from src.triggers import *
 
 
 def createTables(logger, cursor):
